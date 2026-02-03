@@ -154,9 +154,9 @@ export class LoginPage {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
-  // Hardcoded credentials as requested
-  email = 'matias.aliaga@acj.com';
-  password = 'matias12345';
+  // Form fields
+  email = '';
+  password = '';
   
   hidePassword = true;
   isLoading = false;
