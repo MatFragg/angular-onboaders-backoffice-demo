@@ -97,16 +97,43 @@ export interface OnboarderFilters {
   estado?: EstadoOnboarder;
 }
 
+// Score threshold for positive validation (>= 90%)
+const SCORE_THRESHOLD = 90;
+
 // Helper to check if liveness is positive (>= 90%)
 export function isLivenessPositive(livenessDetection: number | null): boolean {
   if (livenessDetection === null) return false;
-  return livenessDetection >= 90;
+  return livenessDetection >= SCORE_THRESHOLD;
 }
 
 // Helper to format liveness for display
 export function formatLiveness(livenessDetection: number | null): string {
   if (livenessDetection === null) return 'N/A';
   return isLivenessPositive(livenessDetection) ? 'Positivo' : 'Negativo';
+}
+
+// Helper to check if document validation is positive (>= 90%)
+export function isDocumentoPositive(validacionDocumento: number | null): boolean {
+  if (validacionDocumento === null) return false;
+  return validacionDocumento >= SCORE_THRESHOLD;
+}
+
+// Helper to format document validation for display
+export function formatDocumento(validacionDocumento: number | null): string {
+  if (validacionDocumento === null) return 'N/A';
+  return isDocumentoPositive(validacionDocumento) ? 'Válido' : 'Inválido';
+}
+
+// Helper to check if biometric comparison is positive (>= 90%)
+export function isComparacionPositive(comparacionBiometrica: number | null): boolean {
+  if (comparacionBiometrica === null) return false;
+  return comparacionBiometrica >= SCORE_THRESHOLD;
+}
+
+// Helper to format biometric comparison for display
+export function formatComparacion(comparacionBiometrica: number | null): string {
+  if (comparacionBiometrica === null) return 'N/A';
+  return isComparacionPositive(comparacionBiometrica) ? 'Coincide' : 'No coincide';
 }
 
 // Helper to format estado for display
@@ -118,3 +145,4 @@ export function formatEstado(estado: EstadoOnboarder): string {
     default: return estado;
   }
 }
+

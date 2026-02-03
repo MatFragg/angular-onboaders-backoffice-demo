@@ -35,6 +35,16 @@
         <td mat-cell *matCellDef="let element">{{ element.apellidos }}</td>
       </ng-container>
 
+      <ng-container matColumnDef="validacionDocumento">
+        <th mat-header-cell *matHeaderCellDef>Val. Documento</th>
+        <td mat-cell *matCellDef="let element">{{ formatDocumento(element.validacionDocumento) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="comparacionBiometrica">
+        <th mat-header-cell *matHeaderCellDef>Comp. Biométrica</th>
+        <td mat-cell *matCellDef="let element">{{ formatComparacion(element.comparacionBiometrica) }}</td>
+      </ng-container>
+
       <ng-container matColumnDef="livenessDetection">
         <th mat-header-cell *matHeaderCellDef>Verificación Facial</th>
         <td mat-cell *matCellDef="let element">{{ formatLiveness(element.livenessDetection) }}</td>

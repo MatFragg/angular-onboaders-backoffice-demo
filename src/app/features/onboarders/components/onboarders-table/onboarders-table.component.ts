@@ -4,7 +4,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 
-import { Cabecera, EstadoCabecera, formatLiveness, formatEstado } from '../../models/onboarder.model';
+import { 
+  Cabecera, 
+  EstadoCabecera, 
+  formatLiveness, 
+  formatDocumento, 
+  formatComparacion,
+  formatEstado 
+} from '../../models/onboarder.model';
 import { EstadoFilterComponent } from '../ui/estado-filter/estado-filter.component';
 
 /**
@@ -40,6 +47,8 @@ export class OnboardersTableComponent {
     'nroDni',
     'nombres',
     'apellidos',
+    'validacionDocumento',
+    'comparacionBiometrica',
     'livenessDetection',
     'estado',
     'detalle'
@@ -67,6 +76,14 @@ export class OnboardersTableComponent {
     return 'estado-pendiente';
   }
 
+  formatDocumento(value: number | null): string {
+    return formatDocumento(value);
+  }
+
+  formatComparacion(value: number | null): string {
+    return formatComparacion(value);
+  }
+
   formatLiveness(value: number | null): string {
     return formatLiveness(value);
   }
@@ -86,3 +103,4 @@ export class OnboardersTableComponent {
     });
   }
 }
+
