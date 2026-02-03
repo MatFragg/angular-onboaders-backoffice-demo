@@ -4,8 +4,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 
-import { Cabecera, formatLiveness, formatEstado } from '../../models/onboarder.model';
-import { DniFilterComponent } from '../ui/dni-filter/dni-filter.component';
+import { Cabecera, EstadoCabecera, formatLiveness, formatEstado } from '../../models/onboarder.model';
+import { EstadoFilterComponent } from '../ui/estado-filter/estado-filter.component';
 
 /**
  * OnboardersTableComponent
@@ -19,7 +19,7 @@ import { DniFilterComponent } from '../ui/dni-filter/dni-filter.component';
     MatTableModule,
     MatPaginatorModule,
     MatIconModule,
-    DniFilterComponent,
+    EstadoFilterComponent,
   ],
   templateUrl: './onboarders-table.component.html',
   styleUrls: ['./onboarders-table.component.scss']
@@ -31,7 +31,7 @@ export class OnboardersTableComponent {
   @Input() pageSize = 20;
   @Input() pageIndex = 0;
 
-  @Output() filterChange = new EventEmitter<string>();
+  @Output() filterChange = new EventEmitter<EstadoCabecera | undefined>();
   @Output() pageChange = new EventEmitter<{ pageIndex: number; pageSize: number }>();
   @Output() viewDetail = new EventEmitter<Cabecera>();
 
@@ -45,7 +45,7 @@ export class OnboardersTableComponent {
     'detalle'
   ];
 
-  onFilter(value: string): void {
+  onFilter(value: EstadoCabecera | undefined): void {
     this.filterChange.emit(value);
   }
 

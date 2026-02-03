@@ -1,33 +1,38 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, forkJoin, map, of, tap } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import { environment } from '@env/environment';
 import { 
   Cabecera, 
   Detalle,
   OnboarderCompleto,
-  PageResponse
+  PageResponse,
+  EstadoCabecera
 } from '../models/onboarder.model';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class OnboardersService {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
   private apiUrl = environment.apiUrl;
 
   /**
    * Get paginated list of onboarders (cabeceras)
    * @param page page number (0-indexed for Spring)
    * @param size page size
-   * @param nroDni optional DNI filter
+   * @param estado optional estado filter (PENDIENTE, APROBADO, RECHAZADO)
    */
-  getCabeceras(page: number = 0, size: number = 20, nroDni?: string): Observable<PageResponse<Cabecera>> {
+  getCabeceras(page: number = 0, size: number = 20, estado?: EstadoCabecera): Observable<PageResponse<Cabecera>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
     
-    if (nroDni) {
-      params = params.set('nroDni', nroDni);
+    if (estado) {
+      params = params.set('estado', estado);
     }
+
+    console.log('[OnboardersService] getCabeceras params:', { page, size, estado });
 
     return this.http.get<PageResponse<Cabecera>>(`${this.apiUrl}/onboarding`, { params }).pipe(
       tap(response => console.log('[OnboardersService] getCabeceras response:', response))
@@ -35,7 +40,7 @@ export class OnboardersService {
   }
 
   /**
-   * Get a single cabecera by ID
+   * Get a single cabecera by ID (includes detalle)
    */
   getCabeceraById(id: number): Observable<Cabecera> {
     return this.http.get<Cabecera>(`${this.apiUrl}/onboarding/${id}`).pipe(
@@ -67,15 +72,31 @@ export class OnboardersService {
 
   /**
    * Approve onboarder
+   * PATCH /{id}/aprobar?usuarioId=X
    */
   aprobarOnboarder(id: number): Observable<Cabecera> {
-    return this.http.post<Cabecera>(`${this.apiUrl}/onboarding/${id}/aprobar`, {});
+    const usuarioId = this.authService.currentUser()?.id;
+    if (!usuarioId) {
+      throw new Error('Usuario no autenticado');
+    }
+    
+    const params = new HttpParams().set('usuarioId', usuarioId.toString());
+    return this.http.patch<Cabecera>(`${this.apiUrl}/onboarding/${id}/aprobar`, null, { params });
   }
 
   /**
    * Reject onboarder
+   * PATCH /{id}/rechazar?usuarioId=X&motivo=Y
    */
-  rechazarOnboarder(id: number, motivoRechazo: string): Observable<Cabecera> {
-    return this.http.post<Cabecera>(`${this.apiUrl}/onboarding/${id}/rechazar`, { motivoRechazo });
+  rechazarOnboarder(id: number, motivo: string): Observable<Cabecera> {
+    const usuarioId = this.authService.currentUser()?.id;
+    if (!usuarioId) {
+      throw new Error('Usuario no autenticado');
+    }
+    
+    const params = new HttpParams()
+      .set('usuarioId', usuarioId.toString())
+      .set('motivo', motivo);
+    return this.http.patch<Cabecera>(`${this.apiUrl}/onboarding/${id}/rechazar`, null, { params });
   }
 }

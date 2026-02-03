@@ -48,8 +48,9 @@ export interface Detalle {
   estado: EstadoOnboarder;
 }
 
-// Estado enum
+// Estado enum (used as filter param)
 export type EstadoOnboarder = 'PENDIENTE' | 'APROBADO' | 'RECHAZADO';
+export type EstadoCabecera = EstadoOnboarder; // Alias for backend compatibility
 
 // Estado de proceso
 export type EstadoProceso = 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';

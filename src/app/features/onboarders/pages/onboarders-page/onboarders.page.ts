@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { OnboardersService } from '../../services/onboarders.service';
-import { Cabecera, PageResponse } from '../../models/onboarder.model';
+import { Cabecera, EstadoCabecera, PageResponse } from '../../models/onboarder.model';
 import { OnboardersTableComponent } from '../../components/onboarders-table/onboarders-table.component';
 import { DetailDialogComponent } from '../../components/ui/detail-dialog/detail-dialog.component';
 
@@ -37,7 +37,7 @@ export class OnboardersPage implements OnInit {
   pageSize = 20;
   
   // Filter
-  filterValue = '';
+  filterEstado: EstadoCabecera | undefined = undefined;
 
   ngOnInit(): void {
     this.loadCabeceras();
@@ -49,7 +49,7 @@ export class OnboardersPage implements OnInit {
     this.onboardersService.getCabeceras(
       this.pageNumber, 
       this.pageSize,
-      this.filterValue || undefined
+      this.filterEstado
     ).subscribe({
       next: (response: PageResponse<Cabecera>) => {
         this.cabeceras.set(response.content);
@@ -63,8 +63,8 @@ export class OnboardersPage implements OnInit {
     });
   }
 
-  onFilter(value: string): void {
-    this.filterValue = value;
+  onFilter(value: EstadoCabecera | undefined): void {
+    this.filterEstado = value;
     this.pageNumber = 0; // Reset to first page
     this.loadCabeceras();
   }
