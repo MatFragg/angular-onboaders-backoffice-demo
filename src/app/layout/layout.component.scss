@@ -1,0 +1,22 @@
+// Layout Component Styles
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-neutral-200);
+}
+
+// Main Area
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+// Content
+.content {
+  flex: 1;
+  padding: 24px;
+  overflow: auto;
+}

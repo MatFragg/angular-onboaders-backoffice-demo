@@ -1,0 +1,70 @@
+<div class="onboarders-table">
+  <!-- Filter -->
+  <div class="filter-container">
+    <app-dni-filter (filterChange)="onFilter($event)"></app-dni-filter>
+  </div>
+
+  <!-- Table Container -->
+  <div class="table-container">
+    @if (isLoading) {
+      <div class="loading-overlay">
+        <mat-icon class="spinner">autorenew</mat-icon>
+        <span>Cargando...</span>
+      </div>
+    }
+
+    <table mat-table [dataSource]="dataSource">
+      
+      <ng-container matColumnDef="fechaSolicitud">
+        <th mat-header-cell *matHeaderCellDef>Fecha Solicitud</th>
+        <td mat-cell *matCellDef="let element">{{ formatFecha(element.fechaSolicitud) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nroDni">
+        <th mat-header-cell *matHeaderCellDef>Nro de DNI</th>
+        <td mat-cell *matCellDef="let element">{{ element.nroDni }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nombres">
+        <th mat-header-cell *matHeaderCellDef>Nombres</th>
+        <td mat-cell *matCellDef="let element">{{ element.nombres }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="apellidos">
+        <th mat-header-cell *matHeaderCellDef>Apellidos</th>
+        <td mat-cell *matCellDef="let element">{{ element.apellidos }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="livenessDetection">
+        <th mat-header-cell *matHeaderCellDef>Verificación Facial</th>
+        <td mat-cell *matCellDef="let element">{{ formatLiveness(element.livenessDetection) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let element">
+          <span [class]="getEstadoClass(element.estado)">{{ formatEstado(element.estado) }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="detalle">
+        <th mat-header-cell *matHeaderCellDef>Detalle</th>
+        <td mat-cell *matCellDef="let element">
+          <a (click)="onViewDetail(element)" class="detail-link">Ver</a>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator 
+      [length]="totalRecords"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[10, 20, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+</div>

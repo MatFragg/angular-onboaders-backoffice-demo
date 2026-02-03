@@ -1,1 +1,121 @@
-/* You can add global styles to this file, and also import other style files */
+/* Tailwind CSS v4 */
+@import "tailwindcss";
+
+/* Custom Color Palette - CSS Custom Properties */
+:root {
+  /* Primary Colors */
+  --color-primary-900: #203584;
+  --color-primary-800: #263E99;
+  --color-primary-700: #2E4AA8;
+  --color-primary-600: #3A57BF;
+  --color-primary-500: #4A67D6;
+  --color-primary-400: #7A8FE8;
+  --color-primary-300: #9AAAF0;
+  --color-primary-200: #C5CEF8;
+  --color-primary-100: #E6EBFF;
+
+  /* Neutral Colors */
+  --color-neutral-900: #1F2937;
+  --color-neutral-800: #374151;
+  --color-neutral-700: #4B5563;
+  --color-neutral-600: #6B7280;
+  --color-neutral-500: #9CA3AF;
+  --color-neutral-400: #D1D5DB;
+  --color-neutral-300: #E5E7EB;
+  --color-neutral-200: #F2F2F2;
+  --color-neutral-100: #FFFFFF;
+
+  /* Success Colors */
+  --color-success-600: #2E7D32;
+  --color-success-100: #E6F4EA;
+
+  /* Error Colors */
+  --color-error-600: #C62828;
+  --color-error-100: #FDECEA;
+
+  /* Warning Colors */
+  --color-warning-600: #ED6C02;
+  --color-warning-100: #FFF4E5;
+}
+
+/* Global Styles */
+html, body { 
+  height: 100%; 
+  background-color: var(--color-neutral-200);
+}
+
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  color: var(--color-neutral-900);
+}
+
+/* Utility classes using custom properties */
+.bg-primary-900 { background-color: var(--color-primary-900); }
+.bg-primary-800 { background-color: var(--color-primary-800); }
+.bg-primary-700 { background-color: var(--color-primary-700); }
+.bg-primary-600 { background-color: var(--color-primary-600); }
+.bg-primary-500 { background-color: var(--color-primary-500); }
+.bg-primary-400 { background-color: var(--color-primary-400); }
+.bg-primary-300 { background-color: var(--color-primary-300); }
+.bg-primary-200 { background-color: var(--color-primary-200); }
+.bg-primary-100 { background-color: var(--color-primary-100); }
+
+.bg-neutral-900 { background-color: var(--color-neutral-900); }
+.bg-neutral-800 { background-color: var(--color-neutral-800); }
+.bg-neutral-700 { background-color: var(--color-neutral-700); }
+.bg-neutral-600 { background-color: var(--color-neutral-600); }
+.bg-neutral-500 { background-color: var(--color-neutral-500); }
+.bg-neutral-400 { background-color: var(--color-neutral-400); }
+.bg-neutral-300 { background-color: var(--color-neutral-300); }
+.bg-neutral-200 { background-color: var(--color-neutral-200); }
+.bg-neutral-100 { background-color: var(--color-neutral-100); }
+
+.bg-success-600 { background-color: var(--color-success-600); }
+.bg-success-100 { background-color: var(--color-success-100); }
+.bg-error-600 { background-color: var(--color-error-600); }
+.bg-error-100 { background-color: var(--color-error-100); }
+.bg-warning-600 { background-color: var(--color-warning-600); }
+.bg-warning-100 { background-color: var(--color-warning-100); }
+
+.text-primary-900 { color: var(--color-primary-900); }
+.text-primary-600 { color: var(--color-primary-600); }
+.text-neutral-900 { color: var(--color-neutral-900); }
+.text-neutral-800 { color: var(--color-neutral-800); }
+.text-neutral-700 { color: var(--color-neutral-700); }
+.text-neutral-600 { color: var(--color-neutral-600); }
+.text-neutral-100 { color: var(--color-neutral-100); }
+
+.border-primary-700 { border-color: var(--color-primary-700); }
+.border-neutral-300 { border-color: var(--color-neutral-300); }
+
+/* Snackbar Styles for Notification Service */
+.snackbar-success {
+  --mdc-snackbar-container-color: var(--color-success-600);
+}
+
+.snackbar-error {
+  --mdc-snackbar-container-color: var(--color-error-600);
+}
+
+.snackbar-warning {
+  --mdc-snackbar-container-color: var(--color-warning-600);
+}
+
+.snackbar-info {
+  --mdc-snackbar-container-color: var(--color-primary-600);
+}
+
+/* Dialog Panel Styles */
+.detail-dialog-panel {
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-shape: 28px;
+    --mdc-dialog-container-color: var(--color-neutral-200);
+  }
+  
+  .mat-mdc-dialog-surface {
+    padding: 0 !important;
+    overflow: hidden;
+  }
+}
+

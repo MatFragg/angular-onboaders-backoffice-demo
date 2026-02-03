@@ -1,0 +1,179 @@
+<div class="dialog-container">
+  <!-- Header -->
+  <div class="dialog-header">
+    <div class="header-info">
+      <h2 class="dialog-title">Verificación de Identidad</h2>
+      <p class="dialog-subtitle">ID: {{ cabecera.id }} · DNI: {{ cabecera.nroDni }} · {{ formatFechaHora(cabecera.fechaSolicitud) }}</p>
+    </div>
+    <button mat-icon-button (click)="close()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="dialog-content">
+    <!-- Left Column -->
+    <div class="left-column">
+      <!-- Status Banner -->
+      <div class="status-banner" [class]="'status-' + cabecera.estado.toLowerCase()">
+        <mat-icon>{{ cabecera.estado === 'APROBADO' ? 'check_circle' : cabecera.estado === 'RECHAZADO' ? 'cancel' : 'pending' }}</mat-icon>
+        <div class="status-info">
+          <span class="status-label">ESTADO ACTUAL</span>
+          <span class="status-value">
+            {{ formatEstado(cabecera.estado) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Applicant Information -->
+      <div class="info-card">
+        <div class="card-header">
+          <mat-icon>badge</mat-icon>
+          <h3>Información del Solicitante</h3>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Nombre Completo</span>
+            <span class="info-value">{{ cabecera.nombres }} {{ cabecera.apellidos }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Nacionalidad</span>
+            <span class="info-value nationality">
+              <span class="flag">🇵🇪</span> {{ detalle.nacionalidad }}
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Fecha de Nacimiento</span>
+            <span class="info-value">{{ formatFecha(detalle.fechaNacimiento) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Sexo</span>
+            <span class="info-value">{{ detalle.sexo === 'M' ? 'Masculino' : 'Femenino' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Fecha de Emisión</span>
+            <span class="info-value">{{ formatFecha(detalle.fechaEmision) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Fecha de Caducidad</span>
+            <span class="info-value">{{ formatFecha(detalle.fechaCaducidad) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auto-Validation -->
+      <div class="info-card">
+        <div class="card-header">
+          <mat-icon>verified_user</mat-icon>
+          <h3>Auto-Validación</h3>
+        </div>
+        <div class="validation-list">
+          <div class="validation-item">
+            <div class="validation-icon" [class]="getScoreClass(cabecera.validacionDocumento)">
+              <mat-icon>{{ (cabecera.validacionDocumento ?? 0) >= 85 ? 'check' : 'warning' }}</mat-icon>
+            </div>
+            <span class="validation-label">Validación del Documento</span>
+            <span class="validation-score" [class]="getScoreClass(cabecera.validacionDocumento)">{{ cabecera.validacionDocumento ?? 'N/A' }}{{ cabecera.validacionDocumento !== null ? '%' : '' }}</span>
+          </div>
+          <div class="validation-item">
+            <div class="validation-icon" [class]="getScoreClass(cabecera.livenessDetection)">
+              <mat-icon>{{ isLivenessPositive(cabecera.livenessDetection) ? 'check' : 'warning' }}</mat-icon>
+            </div>
+            <span class="validation-label">Liveness Detection</span>
+            <span class="validation-score" [class]="getScoreClass(cabecera.livenessDetection)">{{ formatLiveness(cabecera.livenessDetection) }}</span>
+          </div>
+          <div class="validation-item">
+            <div class="validation-icon" [class]="getScoreClass(cabecera.comparacionBiometrica)">
+              <mat-icon>{{ (cabecera.comparacionBiometrica ?? 0) >= 85 ? 'check' : 'warning' }}</mat-icon>
+            </div>
+            <span class="validation-label">Comparación Biométrica</span>
+            <span class="validation-score" [class]="getScoreClass(cabecera.comparacionBiometrica)">{{ cabecera.comparacionBiometrica ?? 'N/A' }}{{ cabecera.comparacionBiometrica !== null ? '%' : '' }}</span>
+          </div>
+        </div>
+        <p class="validation-note">
+          <mat-icon>info</mat-icon>
+          Una puntuación biométrica superior al 85% se considera coincidencia, pero se sugiere revisión manual para valores inferiores al 92%.
+        </p>
+      </div>
+    </div>
+
+    <!-- Right Column - Visual Evidence -->
+    <div class="right-column">
+      <div class="evidence-header">
+        <h3>Evidencia Visual</h3>
+        <button mat-button color="primary">
+          <mat-icon>fullscreen</mat-icon>
+          Expandir
+        </button>
+      </div>
+
+      <div class="evidence-grid">
+        <div class="evidence-card">
+          <div class="evidence-image doc-front">
+            @if (detalle.fotoAnverso) {
+              <img [src]="detalle.fotoAnverso" alt="Anverso DNI">
+            } @else {
+              <mat-icon>credit_card</mat-icon>
+            }
+          </div>
+          <span class="evidence-label">Anverso DNI</span>
+        </div>
+        <div class="evidence-card">
+          <div class="evidence-image doc-back">
+            @if (detalle.fotoReverso) {
+              <img [src]="detalle.fotoReverso" alt="Reverso DNI">
+            } @else {
+              <mat-icon>credit_card</mat-icon>
+            }
+          </div>
+          <span class="evidence-label">Reverso DNI</span>
+        </div>
+        <div class="evidence-card">
+          <div class="evidence-image photo">
+            @if (detalle.fotoFacialDni) {
+              <img [src]="detalle.fotoFacialDni" alt="Foto DNI">
+            } @else {
+              <mat-icon>face</mat-icon>
+            }
+            <span class="badge source">DNI</span>
+          </div>
+          <span class="evidence-label">Foto del DNI</span>
+        </div>
+        <div class="evidence-card">
+          <div class="evidence-image selfie">
+            @if (detalle.fotoSelfie) {
+              <img [src]="detalle.fotoSelfie" alt="Selfie">
+            } @else {
+              <mat-icon>photo_camera</mat-icon>
+            }
+            <span class="badge live">SELFIE</span>
+          </div>
+          <span class="evidence-label">Selfie</span>
+        </div>
+      </div>
+
+      <!-- Warning Banner -->
+      @if (cabecera.comparacionBiometrica !== null && cabecera.comparacionBiometrica < 92) {
+        <div class="warning-banner">
+          <mat-icon>visibility</mat-icon>
+          <span>Por favor verifique manualmente la forma de las orejas y la distancia entre los ojos.</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="dialog-footer">
+    <div class="action-buttons">
+      @if (isPending) {
+        <button mat-stroked-button color="warn" (click)="reject()" [disabled]="isProcessing">Rechazar</button>
+        <button mat-flat-button color="primary" (click)="approve()" [disabled]="isProcessing">
+          <mat-icon>check</mat-icon>
+          Aprobar Verificación
+        </button>
+      } @else {
+        <button mat-stroked-button (click)="close()">Cerrar</button>
+      }
+    </div>
+  </div>
+</div>

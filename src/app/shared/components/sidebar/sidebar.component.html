@@ -1,0 +1,14 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h1 class="brand-title">{{ brandTitle }}</h1>
+  </div>
+  
+  <nav class="sidebar-nav">
+    @for (item of navItems; track item.route) {
+      <a [routerLink]="item.route" routerLinkActive="active" class="nav-item">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+</aside>

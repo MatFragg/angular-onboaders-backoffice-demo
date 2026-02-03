@@ -1,0 +1,15 @@
+<div class="app-container">
+  <!-- Shared Sidebar Component -->
+  <app-sidebar 
+    [brandTitle]="brandTitle" 
+    [navItems]="navItems">
+  </app-sidebar>
+
+  <!-- Main Content Area -->
+  <div class="main-area">
+    <!-- Content from child routes -->
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

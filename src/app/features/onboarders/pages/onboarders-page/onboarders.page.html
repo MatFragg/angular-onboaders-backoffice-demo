@@ -1,0 +1,14 @@
+<div class="onboarders-page">
+  <h1 class="page-title">Onboarders</h1>
+
+  <app-onboarders-table
+    [dataSource]="cabeceras()"
+    [totalRecords]="totalElements()"
+    [isLoading]="isLoading()"
+    [pageSize]="pageSize"
+    [pageIndex]="pageNumber"
+    (filterChange)="onFilter($event)"
+    (pageChange)="onPageChange($event)"
+    (viewDetail)="onViewDetail($event)">
+  </app-onboarders-table>
+</div>

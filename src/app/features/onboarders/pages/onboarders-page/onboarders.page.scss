@@ -1,0 +1,14 @@
+// Onboarders Page Styles
+
+.onboarders-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-neutral-800);
+  margin: 0 0 8px;
+}
