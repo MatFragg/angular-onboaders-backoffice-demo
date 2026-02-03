@@ -135,7 +135,7 @@ export class LoginPage {
 
   // Hardcoded credentials as requested
   email = 'matias.aliaga@acj.com';
-  password = 'matias2oo6';
+  password = 'matias12345';
   
   hidePassword = true;
   isLoading = false;
