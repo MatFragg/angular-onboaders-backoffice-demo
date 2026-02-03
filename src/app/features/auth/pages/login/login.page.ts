@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,6 +17,7 @@ import { AuthService } from '../../../../core/services/auth.service';
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -72,6 +73,10 @@ import { AuthService } from '../../../../core/services/auth.service';
                 Iniciar Sesión
               }
             </button>
+
+            <div class="register-link">
+              ¿No tienes cuenta? <a routerLink="/register">Regístrate</a>
+            </div>
           </form>
         </mat-card-content>
       </mat-card>
@@ -125,6 +130,22 @@ import { AuthService } from '../../../../core/services/auth.service';
 
     mat-spinner {
       margin: 0 auto;
+    }
+
+    .register-link {
+      text-align: center;
+      margin-top: 16px;
+      color: var(--color-neutral-600);
+      
+      a {
+        color: var(--color-primary-600);
+        text-decoration: none;
+        font-weight: 500;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
   `]
 })

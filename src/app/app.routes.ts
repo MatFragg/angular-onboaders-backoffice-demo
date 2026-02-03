@@ -9,6 +9,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/pages/login/login.page').then(m => m.LoginPage),
   },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./features/auth/pages/register/register.page').then(m => m.RegisterPage),
+  },
   
   // Protected routes (require auth)
   {

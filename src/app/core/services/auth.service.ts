@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { environment } from '@env/environment';
-import { LoginRequest, AuthResponse, CurrentUser } from '../models/auth.model';
+import { LoginRequest, RegisterRequest, AuthResponse, CurrentUser } from '../models/auth.model';
 
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
@@ -25,7 +25,9 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
-        this.storeToken(response.token);
+        if (response.token) {
+          this.storeToken(response.token);
+        }
         this.storeUser({
           id: response.id,
           acjMail: response.acjMail
@@ -35,6 +37,22 @@ export class AuthService {
       }),
       catchError(error => {
         console.error('Login error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Register new user
+   * POST /api/auth/register
+   */
+  register(data: RegisterRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
+      tap(response => {
+        console.log('Register successful:', response);
+      }),
+      catchError(error => {
+        console.error('Register error:', error);
         return throwError(() => error);
       })
     );
