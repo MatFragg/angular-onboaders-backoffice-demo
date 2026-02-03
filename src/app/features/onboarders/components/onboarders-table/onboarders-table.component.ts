@@ -40,7 +40,9 @@ export class OnboardersTableComponent {
     'nroDni',
     'nombres',
     'apellidos',
+    'validacionDocumento',
     'livenessDetection',
+    'comparacionBiometrica',
     'estado',
     'detalle'
   ];
