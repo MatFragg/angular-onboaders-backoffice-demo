@@ -6,6 +6,7 @@ import {
   Cabecera, 
   Detalle,
   OnboarderCompleto,
+  CabeceraDetalleResponse,
   PageResponse,
   EstadoCabecera
 } from '../models/onboarder.model';
@@ -41,30 +42,31 @@ export class OnboardersService {
 
   /**
    * Get a single cabecera by ID (includes detalle)
+   * Returns the flat response from backend which includes detalle
    */
-  getCabeceraById(id: number): Observable<Cabecera> {
-    return this.http.get<Cabecera>(`${this.apiUrl}/onboarding/${id}`).pipe(
+  getCabeceraById(id: number): Observable<CabeceraDetalleResponse> {
+    return this.http.get<CabeceraDetalleResponse>(`${this.apiUrl}/onboarding/${id}`).pipe(
       tap(response => console.log('[OnboardersService] getCabeceraById response:', response))
     );
   }
 
   /**
    * Get complete onboarder info for dialog
-   * The cabecera endpoint should return the detalle embedded
+   * Adapts the flat API response to the OnboarderCompleto structure used by the view
    */
   getOnboarderCompleto(cabeceraId: number): Observable<OnboarderCompleto | null> {
     return this.getCabeceraById(cabeceraId).pipe(
-      map(cabecera => {
-        // Check if cabecera has embedded detalle
-        const cabeceraAny = cabecera as any;
-        if (cabeceraAny.detalle) {
+      map(response => {
+        if (response.detalle) {
+          // Destructure to separate cabecera fields from detalle
+          const { detalle, ...cabecera } = response;
           return {
-            cabecera: cabecera,
-            detalle: cabeceraAny.detalle
+            cabecera: cabecera as Cabecera,
+            detalle: detalle
           };
         }
-        // If no embedded detalle, return with null detalle
-        console.warn('[OnboardersService] No embedded detalle found in cabecera');
+        // If no embedded detalle, return null
+        console.warn('[OnboardersService] No embedded detalle found in response');
         return null;
       })
     );

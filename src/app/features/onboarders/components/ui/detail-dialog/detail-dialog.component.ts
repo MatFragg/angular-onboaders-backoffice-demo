@@ -67,8 +67,8 @@ export class DetailDialogComponent {
     });
   }
 
-  getScoreClass(score: number | null): string {
-    if (score === null) return 'score-warning';
+  getScoreClass(score: number | null | undefined): string {
+    if (score === null || score === undefined) return 'score-warning';
     if (score >= 95) return 'score-success';
     if (score >= 85) return 'score-warning';
     return 'score-error';
@@ -106,5 +106,18 @@ export class DetailDialogComponent {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  getImageSrc(base64: string | null): string {
+    if (!base64) return '';
+    if (base64.startsWith('data:image')) return base64;
+    
+    // Simple detection for common image types
+    if (base64.startsWith('iVBORw0KGgo')) {
+      return `data:image/png;base64,${base64}`;
+    }
+    
+    // Default to JPEG (starts with /9j/)
+    return `data:image/jpeg;base64,${base64}`;
   }
 }

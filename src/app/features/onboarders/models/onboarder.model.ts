@@ -23,6 +23,17 @@ export interface Cabecera {
   fechaRechazo: string | null;
   motivoRechazo: string | null;
   tratante: Tratante | null;
+  
+  // Reniec fields
+  reniecHit?: boolean | null;
+  reniecSimilarity?: number | null;
+  fechaValidacionReniec?: string | null;
+  metadataReniec?: string | null;
+
+  // Metadata
+  metadataOCR?: string | null;
+  metadataLiveness?: string | null;
+  metadataComparacion?: string | null;
 }
 
 // Tratante (person who processed)
@@ -38,14 +49,19 @@ export interface Detalle {
   nacionalidad: string | null;
   sexo: 'F' | 'M' | null;
   fechaNacimiento: string | null;
-  fechaEmision: string | null;
+  // fechaEmision removed as it is not in backend
   fechaCaducidad: string | null;
   fotoAnverso: string | null;
   fotoReverso: string | null;
   fotoFacialDni: string | null;
   fotoSelfie: string | null;
-  firma: string | null;
+  // firma removed as it is not in backend
   estado: EstadoOnboarder;
+}
+
+// Flat response from API
+export interface CabeceraDetalleResponse extends Cabecera {
+  detalle: Detalle;
 }
 
 // Estado enum (used as filter param)
