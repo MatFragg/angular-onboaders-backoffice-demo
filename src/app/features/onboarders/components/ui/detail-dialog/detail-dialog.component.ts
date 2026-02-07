@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { OnboarderCompleto, formatLiveness, isLivenessPositive, formatEstado } from '../../../models/onboarder.model';
+import { OnboarderCompleto, formatLiveness, isLivenessPositive, formatEstado, normalizeScore } from '../../../models/onboarder.model';
 import { OnboardersService } from '../../../services/onboarders.service';
 
 /**
@@ -69,9 +69,11 @@ export class DetailDialogComponent {
 
   getScoreClass(score: number | null | undefined): string {
     if (score === null || score === undefined) return 'score-warning';
-    if (score >= 95) return 'score-success';
-    if (score >= 85) return 'score-warning';
-    return 'score-error';
+    const normalized = normalizeScore(score);
+    if (normalized === null) return 'score-warning';
+    if (normalized >= 90) return 'score-success';  // >= 90% is positive/valid
+    if (normalized >= 85) return 'score-warning';  // 85-89% needs review
+    return 'score-error';                           // < 85% is negative/invalid
   }
 
   formatLiveness(value: number | null): string {

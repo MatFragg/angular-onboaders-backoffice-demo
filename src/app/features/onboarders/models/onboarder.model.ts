@@ -116,10 +116,25 @@ export interface OnboarderFilters {
 // Score threshold for positive validation (>= 90%)
 const SCORE_THRESHOLD = 90;
 
+/**
+ * Normalizes a score to percentage (0-100 range)
+ * If value is <= 1, assumes it's a decimal (0.93) and converts to percentage (93)
+ * Otherwise returns as-is
+ */
+export function normalizeScore(score: number | null): number | null {
+  if (score === null) return null;
+  // If score is between 0 and 1 (inclusive), convert to percentage
+  if (score > 0 && score <= 1) {
+    return Math.round(score * 100);
+  }
+  return score;
+}
+
 // Helper to check if liveness is positive (>= 90%)
 export function isLivenessPositive(livenessDetection: number | null): boolean {
-  if (livenessDetection === null) return false;
-  return livenessDetection >= SCORE_THRESHOLD;
+  const normalized = normalizeScore(livenessDetection);
+  if (normalized === null) return false;
+  return normalized >= SCORE_THRESHOLD;
 }
 
 // Helper to format liveness for display
@@ -130,8 +145,9 @@ export function formatLiveness(livenessDetection: number | null): string {
 
 // Helper to check if document validation is positive (>= 90%)
 export function isDocumentoPositive(validacionDocumento: number | null): boolean {
-  if (validacionDocumento === null) return false;
-  return validacionDocumento >= SCORE_THRESHOLD;
+  const normalized = normalizeScore(validacionDocumento);
+  if (normalized === null) return false;
+  return normalized >= SCORE_THRESHOLD;
 }
 
 // Helper to format document validation for display
@@ -142,8 +158,9 @@ export function formatDocumento(validacionDocumento: number | null): string {
 
 // Helper to check if biometric comparison is positive (>= 90%)
 export function isComparacionPositive(comparacionBiometrica: number | null): boolean {
-  if (comparacionBiometrica === null) return false;
-  return comparacionBiometrica >= SCORE_THRESHOLD;
+  const normalized = normalizeScore(comparacionBiometrica);
+  if (normalized === null) return false;
+  return normalized >= SCORE_THRESHOLD;
 }
 
 // Helper to format biometric comparison for display
@@ -161,4 +178,5 @@ export function formatEstado(estado: EstadoOnboarder): string {
     default: return estado;
   }
 }
+
 
