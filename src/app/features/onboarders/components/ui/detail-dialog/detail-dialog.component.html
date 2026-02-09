@@ -117,14 +117,14 @@
     <div class="right-column">
       <div class="evidence-header">
         <h3>Evidencia Visual</h3>
-        <button mat-button color="primary">
+        <button mat-button color="primary" (click)="openLightbox(0)">
           <mat-icon>fullscreen</mat-icon>
           Expandir
         </button>
       </div>
 
       <div class="evidence-grid">
-        <div class="evidence-card">
+        <div class="evidence-card" (click)="openLightbox(0)">
           <div class="evidence-image doc-front">
             @if (detalle.fotoAnverso) {
               <img [src]="getImageSrc(detalle.fotoAnverso)" alt="Anverso DNI">
@@ -134,7 +134,7 @@
           </div>
           <span class="evidence-label">Anverso DNI</span>
         </div>
-        <div class="evidence-card">
+        <div class="evidence-card" (click)="openLightbox(1)">
           <div class="evidence-image doc-back">
             @if (detalle.fotoReverso) {
               <img [src]="getImageSrc(detalle.fotoReverso)" alt="Reverso DNI">
@@ -144,7 +144,7 @@
           </div>
           <span class="evidence-label">Reverso DNI</span>
         </div>
-        <div class="evidence-card">
+        <div class="evidence-card" (click)="openLightbox(2)">
           <div class="evidence-image photo">
             @if (detalle.fotoFacialDni) {
               <img [src]="getImageSrc(detalle.fotoFacialDni)" alt="Foto DNI">
@@ -155,7 +155,7 @@
           </div>
           <span class="evidence-label">Foto del DNI</span>
         </div>
-        <div class="evidence-card">
+        <div class="evidence-card" (click)="openLightbox(3)">
           <div class="evidence-image selfie">
             @if (detalle.fotoSelfie) {
               <img [src]="getImageSrc(detalle.fotoSelfie)" alt="Selfie">
@@ -193,3 +193,31 @@
     </div>
   </div>
 </div>
+
+<!-- Lightbox Overlay -->
+@if (isLightboxOpen && images.length > 0) {
+  <div class="lightbox-overlay" (click)="onLightboxBackdropClick($event)">
+    <button class="lightbox-close" (click)="closeLightbox()">
+      <mat-icon>close</mat-icon>
+    </button>
+    
+    <button class="lightbox-nav prev" (click)="prevImage()" [disabled]="images.length <= 1">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    
+    <div class="lightbox-content" [class]="'orientation-' + images[currentImageIndex].orientation">
+      <img [src]="getImageSrc(images[currentImageIndex].src)" [alt]="images[currentImageIndex].label">
+      <span class="lightbox-label">{{ images[currentImageIndex].label }}</span>
+    </div>
+    
+    <button class="lightbox-nav next" (click)="nextImage()" [disabled]="images.length <= 1">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    
+    <div class="lightbox-indicators">
+      @for (img of images; track img.label; let i = $index) {
+        <span class="indicator" [class.active]="i === currentImageIndex" (click)="currentImageIndex = i"></span>
+      }
+    </div>
+  </div>
+}

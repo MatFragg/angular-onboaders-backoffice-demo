@@ -71,7 +71,7 @@
   gap: 12px;
   padding: 16px;
   border-radius: 12px;
-  
+
   mat-icon {
     font-size: 32px;
     width: 32px;
@@ -79,17 +79,21 @@
   }
 
   &.status-pendiente {
-    background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-500));
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-600),
+      var(--color-primary-500)
+    );
     color: white;
   }
 
   &.status-aprobado {
-    background: linear-gradient(135deg, var(--color-success-600), #43A047);
+    background: linear-gradient(135deg, var(--color-success-600), #43a047);
     color: white;
   }
 
   &.status-rechazado {
-    background: linear-gradient(135deg, var(--color-error-600), #E53935);
+    background: linear-gradient(135deg, var(--color-error-600), #e53935);
     color: white;
   }
 }
@@ -315,15 +319,20 @@
   }
 
   &.doc-front {
-    background: linear-gradient(135deg, var(--color-primary-300), var(--color-primary-400));
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-300),
+      var(--color-primary-400)
+    );
   }
 
   &.doc-back {
-    background: linear-gradient(135deg, #FFB6C1, #FFD1DC);
+    background: linear-gradient(135deg, #ffb6c1, #ffd1dc);
   }
 
-  &.photo, &.selfie {
-    background: linear-gradient(135deg, #8BC34A, #689F38);
+  &.photo,
+  &.selfie {
+    background: linear-gradient(135deg, #8bc34a, #689f38);
   }
 }
 
@@ -406,5 +415,184 @@
 
   button[color="primary"] {
     background-color: var(--color-primary-600);
+  }
+}
+
+// Evidence cards clickable
+.evidence-card {
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+
+    .evidence-image {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+// ============================================
+// LIGHTBOX OVERLAY
+// ============================================
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+
+  mat-icon {
+    color: white;
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease;
+
+  mat-icon {
+    color: white;
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  &.prev {
+    left: 20px;
+  }
+
+  &.next {
+    right: 20px;
+  }
+}
+
+.lightbox-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  background: transparent !important;
+
+  img {
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    background: transparent !important;
+  }
+
+  // Horizontal images (DNI anverso/reverso)
+  &.orientation-landscape img {
+    width: 85vw;
+    max-width: 1000px;
+    height: auto;
+    max-height: 75vh;
+    object-fit: contain;
+  }
+
+  // Vertical images (selfie, foto DNI)
+  &.orientation-portrait img {
+    height: 75vh;
+    max-height: 700px;
+    width: auto;
+    max-width: 85vw;
+    object-fit: contain;
+  }
+}
+
+.lightbox-label {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.lightbox-indicators {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+
+  .indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    &.active {
+      background: white;
+      transform: scale(1.2);
+    }
   }
 }

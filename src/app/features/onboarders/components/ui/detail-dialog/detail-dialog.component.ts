@@ -26,6 +26,10 @@ export class DetailDialogComponent {
   private onboardersService = inject(OnboardersService);
   isProcessing = false;
 
+  // Lightbox state
+  isLightboxOpen = false;
+  currentImageIndex = 0;
+
   constructor(
     public dialogRef: MatDialogRef<DetailDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: OnboarderCompleto
@@ -121,5 +125,42 @@ export class DetailDialogComponent {
     
     // Default to JPEG (starts with /9j/)
     return `data:image/jpeg;base64,${base64}`;
+  }
+
+  // Lightbox methods
+  get images() {
+    return [
+      { src: this.detalle.fotoAnverso, label: 'Anverso DNI', orientation: 'landscape' },
+      { src: this.detalle.fotoReverso, label: 'Reverso DNI', orientation: 'landscape' },
+      { src: this.detalle.fotoFacialDni, label: 'Foto del DNI', orientation: 'portrait' },
+      { src: this.detalle.fotoSelfie, label: 'Selfie', orientation: 'portrait' }
+    ].filter(img => img.src);
+  }
+
+  openLightbox(startIndex: number = 0): void {
+    this.currentImageIndex = startIndex;
+    this.isLightboxOpen = true;
+  }
+
+  closeLightbox(): void {
+    this.isLightboxOpen = false;
+  }
+
+  prevImage(): void {
+    this.currentImageIndex = this.currentImageIndex > 0 
+      ? this.currentImageIndex - 1 
+      : this.images.length - 1;
+  }
+
+  nextImage(): void {
+    this.currentImageIndex = this.currentImageIndex < this.images.length - 1 
+      ? this.currentImageIndex + 1 
+      : 0;
+  }
+
+  onLightboxBackdropClick(event: MouseEvent): void {
+    if ((event.target as HTMLElement).classList.contains('lightbox-overlay')) {
+      this.closeLightbox();
+    }
   }
 }
