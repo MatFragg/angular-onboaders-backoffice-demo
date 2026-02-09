@@ -17,6 +17,7 @@ export class AuthService {
   // Reactive state
   currentUser = signal<CurrentUser | null>(this.getStoredUser());
   isAuthenticated = signal(this.hasValidToken());
+  userRoles = signal<string[]>(this.getRolesFromToken());
 
   /**
    * Login with credentials
@@ -34,6 +35,7 @@ export class AuthService {
         });
         this.currentUser.set({ id: response.id, acjMail: response.acjMail });
         this.isAuthenticated.set(true);
+        this.userRoles.set(this.getRolesFromToken());
       }),
       catchError(error => {
         console.error('Login error:', error);
@@ -65,6 +67,7 @@ export class AuthService {
     this.clearStorage();
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
+    this.userRoles.set([]);
     this.router.navigate(['/login']);
   }
 
@@ -121,5 +124,34 @@ export class AuthService {
   private clearStorage(): void {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+  }
+
+  /**
+   * Extract roles from JWT token
+   */
+  getRolesFromToken(): string[] {
+    const token = this.getToken();
+    if (!token) return [];
+    
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.roles || [];
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Check if current user has a specific role
+   */
+  hasRole(role: string): boolean {
+    return this.userRoles().includes(role);
+  }
+
+  /**
+   * Check if current user is admin
+   */
+  isAdmin(): boolean {
+    return this.hasRole('ADMIN');
   }
 }

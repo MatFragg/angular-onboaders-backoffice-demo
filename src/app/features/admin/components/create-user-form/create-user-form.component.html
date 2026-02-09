@@ -1,0 +1,112 @@
+<h2 mat-dialog-title>
+  <mat-icon>person_add</mat-icon>
+  Crear Nuevo Usuario
+</h2>
+
+<mat-dialog-content>
+  <form (ngSubmit)="onSubmit()" class="user-form" id="createUserForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre completo</mat-label>
+      <input matInput 
+        type="text" 
+        [(ngModel)]="nombre" 
+        name="nombre"
+        placeholder="Juan Pérez"
+        required>
+      <mat-icon matPrefix>person</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email corporativo</mat-label>
+      <input matInput 
+        type="email" 
+        [(ngModel)]="email" 
+        name="email"
+        placeholder="usuario@acj.com"
+        required>
+      <mat-icon matPrefix>email</mat-icon>
+    </mat-form-field>
+
+    <div class="password-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <input matInput 
+          [type]="hidePassword ? 'password' : 'text'" 
+          [(ngModel)]="password" 
+          name="password"
+          required
+          minlength="6">
+        <mat-icon matPrefix>lock</mat-icon>
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Confirmar contraseña</mat-label>
+        <input matInput 
+          [type]="hideConfirmPassword ? 'password' : 'text'" 
+          [(ngModel)]="confirmPassword" 
+          name="confirmPassword"
+          required>
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword = !hideConfirmPassword">
+          <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <div class="role-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo de usuario</mat-label>
+        <mat-select [(ngModel)]="tipoUsuario" name="tipoUsuario" required>
+          <mat-option value="ADMIN">Administrador</mat-option>
+          <mat-option value="CORRIENTE">Usuario Corriente</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>badge</mat-icon>
+      </mat-form-field>
+
+      @if (tipoUsuario === 'CORRIENTE') {
+        <mat-form-field appearance="outline">
+          <mat-label>Sub-rol</mat-label>
+          <mat-select [(ngModel)]="subRol" name="subRol" required>
+            <mat-option value="OBSERVADOR">Observador</mat-option>
+            <mat-option value="RESOLUTOR">Resolutor</mat-option>
+          </mat-select>
+          <mat-icon matPrefix>work</mat-icon>
+        </mat-form-field>
+      }
+    </div>
+
+    @if (errorMessage) {
+      <div class="message error">
+        <mat-icon>error</mat-icon>
+        {{ errorMessage }}
+      </div>
+    }
+
+    @if (successMessage) {
+      <div class="message success">
+        <mat-icon>check_circle</mat-icon>
+        {{ successMessage }}
+      </div>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" (click)="cancel()" [disabled]="isLoading">
+    Cancelar
+  </button>
+  <button mat-flat-button color="primary" type="submit" form="createUserForm" [disabled]="isLoading">
+    @if (isLoading) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      <ng-container>
+        <mat-icon>person_add</mat-icon>
+        Crear Usuario
+      </ng-container>
+    }
+  </button>
+</mat-dialog-actions>
+

@@ -1,0 +1,58 @@
+<div class="admin-container">
+  <header class="admin-header">
+    <h1>Panel de Administración</h1>
+    <p class="subtitle">Gestión de usuarios y configuración del sistema</p>
+  </header>
+
+  <div class="admin-content">
+    <!-- User Info Card -->
+    <div class="info-card">
+      <div class="card-header">
+        <mat-icon>account_circle</mat-icon>
+        <h2>Usuario Actual</h2>
+      </div>
+      <div class="card-body">
+        <div class="info-row">
+          <span class="label">Email:</span>
+          <span class="value">{{ currentUser()?.acjMail }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Roles:</span>
+          <div class="roles">
+            @for (role of userRoles(); track role) {
+              <span class="role-badge">{{ role }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <mat-icon>people</mat-icon>
+        <div class="stat-info">
+          <span class="stat-value">--</span>
+          <span class="stat-label">Usuarios Totales</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <mat-icon>admin_panel_settings</mat-icon>
+        <div class="stat-info">
+          <span class="stat-value">--</span>
+          <span class="stat-label">Administradores</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <mat-icon>pending_actions</mat-icon>
+        <div class="stat-info">
+          <span class="stat-value">--</span>
+          <span class="stat-label">Pendientes</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create User Form -->
+    <app-create-user-form (userCreated)="onUserCreated()"></app-create-user-form>
+  </div>
+</div>

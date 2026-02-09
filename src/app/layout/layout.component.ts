@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent, NavItem } from '../shared/components/sidebar/sidebar.component';
+import { AuthService } from '../core/services/auth.service';
 
 @Component({
   selector: 'app-layout',
@@ -15,10 +16,26 @@ import { SidebarComponent, NavItem } from '../shared/components/sidebar/sidebar.
   styleUrls: ['./layout.component.scss']
 })
 export class LayoutComponent {
+  private authService = inject(AuthService);
+  
   brandTitle = 'ACJ ENROLLMENT';
   
-  navItems: NavItem[] = [
+  // Base nav items visible to all authenticated users
+  private baseNavItems: NavItem[] = [
     { label: 'Onboarders', icon: 'people', route: '/onboarders' },
-    // Add more nav items here as features grow
   ];
+  
+  // Admin-only nav items
+  private adminNavItems: NavItem[] = [
+    { label: 'Usuarios', icon: 'manage_accounts', route: '/admin/users' },
+  ];
+  
+  // Computed nav items based on user role
+  navItems = computed(() => {
+    const items = [...this.baseNavItems];
+    if (this.authService.isAdmin()) {
+      items.push(...this.adminNavItems);
+    }
+    return items;
+  });
 }

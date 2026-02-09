@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   // Public routes (no auth required)
@@ -31,6 +32,14 @@ export const routes: Routes = [
         loadChildren: () => 
           import('./features/onboarders/onboarders.routes')
             .then(m => m.ONBOARDERS_ROUTES),
+      },
+      {
+        path: 'admin',
+        loadChildren: () =>
+          import('./features/admin/admin.routes')
+            .then(m => m.ADMIN_ROUTES),
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN'] },
       },
     ],
   },
