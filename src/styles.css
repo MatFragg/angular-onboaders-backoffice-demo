@@ -91,26 +91,26 @@ body {
 
 /* Snackbar Styles for Notification Service */
 .snackbar-success {
-  --mdc-snackbar-container-color: var(--color-success-600);
+  --mat-snackbar-container-color: var(--color-success-600);
 }
 
 .snackbar-error {
-  --mdc-snackbar-container-color: var(--color-error-600);
+  --mat-snackbar-container-color: var(--color-error-600);
 }
 
 .snackbar-warning {
-  --mdc-snackbar-container-color: var(--color-warning-600);
+  --mat-snackbar-container-color: var(--color-warning-600);
 }
 
 .snackbar-info {
-  --mdc-snackbar-container-color: var(--color-primary-600);
+  --mat-snackbar-container-color: var(--color-primary-600);
 }
 
 /* Dialog Panel Styles */
 .detail-dialog-panel {
   .mat-mdc-dialog-container {
-    --mdc-dialog-container-shape: 28px;
-    --mdc-dialog-container-color: var(--color-neutral-200);
+    --mat-dialog-container-shape: 28px;
+    --mat-dialog-container-color: var(--color-neutral-200);
   }
   
   .mat-mdc-dialog-surface {

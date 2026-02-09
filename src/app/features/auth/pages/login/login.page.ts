@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -15,7 +15,6 @@ import { AuthService } from '../../../../core/services/auth.service';
   selector: 'app-login-page',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     RouterLink,
     MatCardModule,
@@ -23,8 +22,8 @@ import { AuthService } from '../../../../core/services/auth.service';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
-  ],
+    MatProgressSpinnerModule
+],
   template: `
     <div class="login-container">
       <mat-card class="login-card">

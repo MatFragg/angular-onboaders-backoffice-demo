@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,12 +22,11 @@ import { EstadoFilterComponent } from '../ui/estado-filter/estado-filter.compone
   selector: 'app-onboarders-table',
   standalone: true,
   imports: [
-    CommonModule,
     MatTableModule,
     MatPaginatorModule,
     MatIconModule,
-    EstadoFilterComponent,
-  ],
+    EstadoFilterComponent
+],
   templateUrl: './onboarders-table.component.html',
   styleUrls: ['./onboarders-table.component.scss']
 })

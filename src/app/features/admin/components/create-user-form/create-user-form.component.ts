@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,7 +16,6 @@ import { TipoUsuario, SubRol } from '../../../../core/models/auth.model';
   selector: 'app-create-user-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -24,8 +23,8 @@ import { TipoUsuario, SubRol } from '../../../../core/models/auth.model';
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
-    MatProgressSpinnerModule,
-  ],
+    MatProgressSpinnerModule
+],
   templateUrl: './create-user-form.component.html',
   styleUrls: ['./create-user-form.component.scss']
 })

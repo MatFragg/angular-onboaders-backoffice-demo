@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -17,7 +17,6 @@ import { TipoUsuario, SubRol } from '../../../../core/models/auth.model';
   selector: 'app-register-page',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     RouterLink,
     MatCardModule,
@@ -26,8 +25,8 @@ import { TipoUsuario, SubRol } from '../../../../core/models/auth.model';
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
-    MatProgressSpinnerModule,
-  ],
+    MatProgressSpinnerModule
+],
   template: `
     <div class="register-container">
       <mat-card class="register-card">
