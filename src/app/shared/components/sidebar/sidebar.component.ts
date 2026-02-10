@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -27,4 +27,5 @@ export interface NavItem {
 export class SidebarComponent {
   @Input() brandTitle = 'ACJ ENROLLMENT';
   @Input() navItems: NavItem[] = [];
+  @Output() logoutClicked = new EventEmitter<void>();
 }
