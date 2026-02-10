@@ -119,3 +119,43 @@ body {
   }
 }
 
+/* Fix for Angular Material floating label overlapping input border */
+.mat-mdc-form-field .mat-mdc-floating-label,
+.mat-mdc-form-field .mdc-floating-label {
+  background-color: var(--color-neutral-100);
+  padding: 0 8px; /* Increased padding to detach line from text */
+}
+
+/* Fix for prefix icon spacing - Ensure NO border is present */
+.mat-mdc-form-field .mat-mdc-form-field-icon-prefix,
+[matPrefix] {
+  margin-right: 8px !important;
+  border-right: none !important;
+  border: none !important;
+  padding-right: 0 !important;
+  align-self: center;
+}
+
+/* GLOBAL RESET FOR MATERIAL INPUTS */
+/* Removes unexpected borders caused by Tailwind CSS resets */
+
+/* 1. Remove borders from notched outline segments */
+.mdc-notched-outline__leading {
+  border-right: none !important;
+}
+
+.mdc-notched-outline__notch {
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important; /* The line crossing the label */
+}
+
+.mdc-notched-outline__trailing {
+  border-left: none !important;
+}
+
+/* 2. Ensure labels have background color to cover any remaining lines */
+.mdc-floating-label {
+  background-color: white !important;
+  padding: 0 4px !important;
+}

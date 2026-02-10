@@ -66,7 +66,7 @@ export interface EditUserDialogData {
             placeholder="Dejar vacío para mantener la actual">
           <mat-icon matPrefix>lock</mat-icon>
           <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
-            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            <mat-icon>{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
           </button>
         </mat-form-field>
 
@@ -167,6 +167,33 @@ export interface EditUserDialogData {
       mat-form-field {
         width: 100%;
       }
+    }
+
+    /* FIX: Eliminar bordes espurios (Tailwind vs Material) y corregir posición de label */
+    
+    /* 1. Eliminar bordes laterales internos del outline que aparecen como líneas verticales */
+    ::ng-deep .mdc-notched-outline__leading {
+      border-right: none !important;
+    }
+    ::ng-deep .mdc-notched-outline__notch {
+      border-left: none !important;
+      border-right: none !important;
+      border-top: none !important; /* Línea que cruza el label */
+    }
+    ::ng-deep .mdc-notched-outline__trailing {
+      border-left: none !important;
+    }
+
+    /* 2. Asegurar que el label tenga fondo blanco para tapar cualquier residuo */
+    ::ng-deep .mdc-floating-label {
+      background-color: white !important;
+      padding: 0 4px !important;
+    }
+    
+    /* 3. Eliminar cualquier borde derecho en el icono prefijo si existiera */
+    ::ng-deep .mat-mdc-form-field-icon-prefix {
+       border-right: none !important;
+       padding-right: 8px; /* Espacio con el texto */
     }
 
     .message {
