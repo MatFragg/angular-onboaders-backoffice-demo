@@ -3,8 +3,8 @@ import { Routes } from '@angular/router';
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'users',
-    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/admin-dashboard/admin-dashboard.page').then(m => m.AdminDashboardPage),
   },
   {
     path: 'users',

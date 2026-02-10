@@ -2,7 +2,8 @@
   <!-- Shared Sidebar Component -->
   <app-sidebar 
     [brandTitle]="brandTitle" 
-    [navItems]="navItems()">
+    [navItems]="navItems()"
+    (logoutClicked)="onLogout()">
   </app-sidebar>
 
   <!-- Main Content Area -->

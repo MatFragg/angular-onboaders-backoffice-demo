@@ -37,4 +37,8 @@ export class LayoutComponent {
     }
     return items;
   });
+
+  onLogout(): void {
+    this.authService.logout();
+  }
 }

@@ -1,6 +1,15 @@
 <h2 mat-dialog-title>
-  <mat-icon>person_add</mat-icon>
-  Crear Nuevo Usuario
+  <button mat-icon-button type="button" (click)="cancel()" [disabled]="isLoading" class="action-close">
+    <mat-icon>close</mat-icon>
+  </button>
+  <span class="title-text">Crear Nuevo Usuario</span>
+  <button mat-icon-button type="submit" form="createUserForm" [disabled]="isLoading" class="action-confirm">
+    @if (isLoading) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      <mat-icon>check</mat-icon>
+    }
+  </button>
 </h2>
 
 <mat-dialog-content>
@@ -93,20 +102,4 @@
     }
   </form>
 </mat-dialog-content>
-
-<mat-dialog-actions align="end">
-  <button mat-stroked-button type="button" (click)="cancel()" [disabled]="isLoading">
-    Cancelar
-  </button>
-  <button mat-flat-button color="primary" type="submit" form="createUserForm" [disabled]="isLoading">
-    @if (isLoading) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      <ng-container>
-        <mat-icon>person_add</mat-icon>
-        Crear Usuario
-      </ng-container>
-    }
-  </button>
-</mat-dialog-actions>
 

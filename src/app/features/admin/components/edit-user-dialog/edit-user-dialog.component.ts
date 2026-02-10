@@ -31,8 +31,17 @@ export interface EditUserDialogData {
 ],
   template: `
     <h2 mat-dialog-title>
-      <mat-icon>edit</mat-icon>
-      Editar Usuario
+      <button mat-icon-button type="button" (click)="cancel()" [disabled]="isLoading" class="action-close">
+        <mat-icon>close</mat-icon>
+      </button>
+      <span class="title-text">Editar Usuario</span>
+      <button mat-icon-button type="submit" form="editUserForm" [disabled]="isLoading" class="action-confirm">
+        @if (isLoading) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          <mat-icon>check</mat-icon>
+        }
+      </button>
     </h2>
 
     <mat-dialog-content>
@@ -107,39 +116,37 @@ export interface EditUserDialogData {
         }
       </form>
     </mat-dialog-content>
-
-    <mat-dialog-actions align="end">
-      <button mat-stroked-button type="button" (click)="cancel()" [disabled]="isLoading">
-        Cancelar
-      </button>
-      <button mat-flat-button color="primary" type="submit" form="editUserForm" [disabled]="isLoading">
-        @if (isLoading) {
-          <mat-spinner diameter="20"></mat-spinner>
-        } @else {
-          <ng-container>
-            <mat-icon>save</mat-icon>
-            Guardar Cambios
-          </ng-container>
-        }
-      </button>
-    </mat-dialog-actions>
   `,
   styles: [`
     h2[mat-dialog-title] {
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
       margin: 0;
-      padding: 16px 24px;
+      padding: 8px 8px 8px 16px;
       background: var(--color-primary-600);
       color: white;
-      font-size: 18px;
-      font-weight: 500;
 
-      mat-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
+      .title-text {
+        font-size: 16px;
+        font-weight: 500;
+        color: white;
+        flex: 1;
+        text-align: left;
+      }
+
+      .action-close,
+      .action-confirm {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .action-close:hover,
+      .action-confirm:hover {
+        color: white;
+      }
+
+      mat-spinner {
+        margin: 0 auto;
       }
     }
 
@@ -169,33 +176,6 @@ export interface EditUserDialogData {
       }
     }
 
-    /* FIX: Eliminar bordes espurios (Tailwind vs Material) y corregir posición de label */
-    
-    /* 1. Eliminar bordes laterales internos del outline que aparecen como líneas verticales */
-    ::ng-deep .mdc-notched-outline__leading {
-      border-right: none !important;
-    }
-    ::ng-deep .mdc-notched-outline__notch {
-      border-left: none !important;
-      border-right: none !important;
-      border-top: none !important; /* Línea que cruza el label */
-    }
-    ::ng-deep .mdc-notched-outline__trailing {
-      border-left: none !important;
-    }
-
-    /* 2. Asegurar que el label tenga fondo blanco para tapar cualquier residuo */
-    ::ng-deep .mdc-floating-label {
-      background-color: white !important;
-      padding: 0 4px !important;
-    }
-    
-    /* 3. Eliminar cualquier borde derecho en el icono prefijo si existiera */
-    ::ng-deep .mat-mdc-form-field-icon-prefix {
-       border-right: none !important;
-       padding-right: 8px; /* Espacio con el texto */
-    }
-
     .message {
       display: flex;
       align-items: center;
@@ -218,28 +198,6 @@ export interface EditUserDialogData {
       &.success {
         background: var(--color-success-100);
         color: var(--color-success-700);
-      }
-    }
-
-    mat-dialog-actions {
-      padding: 16px 24px !important;
-      border-top: 1px solid var(--color-neutral-300);
-
-      button {
-        min-width: 120px;
-        height: 42px;
-      }
-
-      button[color="primary"] {
-        background-color: var(--color-primary-600);
-        
-        mat-icon {
-          margin-right: 8px;
-        }
-      }
-
-      mat-spinner {
-        margin: 0 auto;
       }
     }
 
