@@ -64,14 +64,6 @@
           <h3>Auto-Validación</h3>
         </div>
         <div class="validation-list">
-          <div class="validation-item">
-            <div class="validation-icon" [class]="getScoreClass(cabecera.validacionDocumento)">
-              <mat-icon>{{ (cabecera.validacionDocumento ?? 0) >= 85 ? 'check' : 'warning' }}</mat-icon>
-            </div>
-            <span class="validation-label">Validación del Documento</span>
-            <span class="validation-score" [class]="getScoreClass(cabecera.validacionDocumento)">{{ cabecera.validacionDocumento ?? 'N/A' }}{{ cabecera.validacionDocumento !== null ? '%' : '' }}</span>
-          </div>
-          
           <!-- RENIEC Validation -->
           <div class="validation-item">
             <div class="validation-icon" [class]="cabecera.reniecHit ? 'score-success' : 'score-error'">

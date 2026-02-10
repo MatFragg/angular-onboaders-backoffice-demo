@@ -10,7 +10,6 @@ export interface Cabecera {
   apellidos: string;
   nroDni: string;
   fechaSolicitud: string;
-  validacionDocumento: number | null;
   comparacionBiometrica: number | null;
   livenessDetection: number | null;
   estado: EstadoOnboarder;
@@ -141,19 +140,6 @@ export function isLivenessPositive(livenessDetection: number | null): boolean {
 export function formatLiveness(livenessDetection: number | null): string {
   if (livenessDetection === null) return 'N/A';
   return isLivenessPositive(livenessDetection) ? 'Positivo' : 'Negativo';
-}
-
-// Helper to check if document validation is positive (>= 90%)
-export function isDocumentoPositive(validacionDocumento: number | null): boolean {
-  const normalized = normalizeScore(validacionDocumento);
-  if (normalized === null) return false;
-  return normalized >= SCORE_THRESHOLD;
-}
-
-// Helper to format document validation for display
-export function formatDocumento(validacionDocumento: number | null): string {
-  if (validacionDocumento === null) return 'N/A';
-  return isDocumentoPositive(validacionDocumento) ? 'Válido' : 'Inválido';
 }
 
 // Helper to check if biometric comparison is positive (>= 90%)
