@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -15,12 +15,11 @@ import { EstadoCabecera } from '../../../models/onboarder.model';
   selector: 'app-estado-filter',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatIconModule,
-  ],
+    MatIconModule
+],
   template: `
     <mat-form-field appearance="outline" class="filter-field">
       <mat-label>Filtrar por Estado</mat-label>

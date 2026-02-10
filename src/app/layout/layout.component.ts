@@ -1,6 +1,6 @@
 import { Component, inject, computed } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { SidebarComponent, NavItem } from '../shared/components/sidebar/sidebar.component';
 import { AuthService } from '../core/services/auth.service';
 
@@ -9,9 +9,8 @@ import { AuthService } from '../core/services/auth.service';
   standalone: true,
   imports: [
     RouterOutlet,
-    CommonModule,
-    SidebarComponent,
-  ],
+    SidebarComponent
+],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss']
 })

@@ -1,5 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
@@ -16,14 +16,13 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
   selector: 'app-users-list-page',
   standalone: true,
   imports: [
-    CommonModule,
     MatIconModule,
     MatButtonModule,
     MatTableModule,
     MatProgressSpinnerModule,
     MatDialogModule,
-    MatTooltipModule,
-  ],
+    MatTooltipModule
+],
   template: `
     <div class="page-container">
       <header class="page-header">

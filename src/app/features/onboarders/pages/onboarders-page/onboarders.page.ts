@@ -1,5 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { OnboardersService } from '../../services/onboarders.service';
@@ -16,10 +16,9 @@ import { DetailDialogComponent } from '../../components/ui/detail-dialog/detail-
   selector: 'app-onboarders-page',
   standalone: true,
   imports: [
-    CommonModule,
     MatDialogModule,
-    OnboardersTableComponent,
-  ],
+    OnboardersTableComponent
+],
   templateUrl: './onboarders.page.html',
   styleUrls: ['./onboarders.page.scss']
 })
