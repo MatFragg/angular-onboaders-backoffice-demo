@@ -25,6 +25,11 @@
         <td mat-cell *matCellDef="let element">{{ element.nroDni }}</td>
       </ng-container>
 
+      <ng-container matColumnDef="canal">
+        <th mat-header-cell *matHeaderCellDef>Origen</th>
+        <td mat-cell *matCellDef="let element">{{ element.origen }}</td>
+      </ng-container>
+
       <ng-container matColumnDef="nombres">
         <th mat-header-cell *matHeaderCellDef>Nombres</th>
         <td mat-cell *matCellDef="let element">{{ element.nombres }}</td>

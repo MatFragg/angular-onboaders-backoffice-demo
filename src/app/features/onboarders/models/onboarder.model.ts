@@ -33,6 +33,12 @@ export interface Cabecera {
   metadataOCR?: string | null;
   metadataLiveness?: string | null;
   metadataComparacion?: string | null;
+  origen?: string | null;
+  ipOrigenPublica?: string | null;
+  latitud: number | null;
+  longitud: number | null;
+  empresaNombre: string | null;
+  empresaRuc: string | null;
 }
 
 // Tratante (person who processed)
@@ -56,6 +62,7 @@ export interface Detalle {
   fotoSelfie: string | null;
   // firma removed as it is not in backend
   estado: EstadoOnboarder;
+
 }
 
 // Flat response from API

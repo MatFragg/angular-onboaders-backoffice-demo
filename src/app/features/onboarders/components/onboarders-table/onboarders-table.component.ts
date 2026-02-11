@@ -43,6 +43,7 @@ export class OnboardersTableComponent {
   displayedColumns: string[] = [
     'fechaSolicitud',
     'nroDni',
+    'canal',
     'nombres',
     'apellidos',
     'comparacionBiometrica',

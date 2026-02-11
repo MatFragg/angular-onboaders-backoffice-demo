@@ -26,12 +26,12 @@
       </div>
 
       <!-- Applicant Information -->
-      <div class="info-card">
-        <div class="card-header">
-          <mat-icon>badge</mat-icon>
-          <h3>Información del Solicitante</h3>
+      <div class="info-card" >
+        <div class="card-header" >
+          <mat-icon style="margin-top: 0.6875em;">badge</mat-icon>
+          <h3 style="margin-top: 0.6875em;">Información del Solicitante</h3>
         </div>
-        <div class="info-grid">
+        <div class="info-grid" >
           <div class="info-item">
             <span class="info-label">Nombre Completo</span>
             <span class="info-value">{{ cabecera.nombres }} {{ cabecera.apellidos }}</span>
@@ -98,10 +98,6 @@
             <span class="validation-score" [class]="getScoreClass(cabecera.comparacionBiometrica)">{{ cabecera.comparacionBiometrica ?? 'N/A' }}{{ cabecera.comparacionBiometrica !== null ? '%' : '' }}</span>
           </div>
         </div>
-        <p class="validation-note">
-          <mat-icon>info</mat-icon>
-          Una puntuación biométrica superior al 85% se considera coincidencia, pero se sugiere revisión manual para valores inferiores al 92%.
-        </p>
       </div>
     </div>
 
@@ -160,6 +156,40 @@
         </div>
       </div>
 
+      <div class="info-card">
+        <div class="card-header">
+          <mat-icon>corporate_fare</mat-icon>
+          <h3>Empresa</h3>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Nombre de la Empresa</span>
+            <span class="info-value">{{ cabecera.empresaNombre ?? 'N/A' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">RUC</span>
+            <span class="info-value">{{ cabecera.empresaRuc ?? 'N/A' }}</span>
+          </div>
+        </div>
+      </div>
+      <!-- Location -->
+      <div class="info-card" style="margin-top: 0.75rem;">
+        <div class="card-header">
+          <mat-icon>location_on</mat-icon>
+          <h3>Ubicación</h3>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Latitud</span>
+            <span class="info-value">{{ cabecera.latitud ?? 'N/A' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Longitud</span>
+            <span class="info-value">{{ cabecera.longitud ?? 'N/A' }}</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Warning Banner -->
       @if (cabecera.comparacionBiometrica !== null && cabecera.comparacionBiometrica < 92) {
         <div class="warning-banner">
@@ -168,6 +198,8 @@
         </div>
       }
     </div>
+
+    
   </div>
 
   <!-- Footer -->

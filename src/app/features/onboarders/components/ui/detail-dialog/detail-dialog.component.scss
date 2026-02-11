@@ -267,13 +267,14 @@
 .right-column {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  margin: 0 0 16px 0;
 }
 
 .evidence-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: start;
+  
 
   h3 {
     font-size: 16px;
@@ -281,12 +282,17 @@
     color: var(--color-neutral-800);
     margin: 0;
   }
+
+  button {
+    margin-top: -4px;
+  }
 }
 
 .evidence-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+  margin-bottom: 16px;
 }
 
 .evidence-card {
