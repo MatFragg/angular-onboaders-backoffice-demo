@@ -8,7 +8,6 @@ import {
   Cabecera, 
   EstadoCabecera, 
   formatLiveness, 
-  formatDocumento, 
   formatComparacion,
   formatEstado 
 } from '../../models/onboarder.model';
@@ -44,9 +43,9 @@ export class OnboardersTableComponent {
   displayedColumns: string[] = [
     'fechaSolicitud',
     'nroDni',
+    'canal',
     'nombres',
     'apellidos',
-    'validacionDocumento',
     'comparacionBiometrica',
     'livenessDetection',
     'estado',
@@ -73,10 +72,6 @@ export class OnboardersTableComponent {
     if (s === 'APROBADO') return 'estado-aprobado';
     if (s === 'RECHAZADO') return 'estado-rechazado';
     return 'estado-pendiente';
-  }
-
-  formatDocumento(value: number | null): string {
-    return formatDocumento(value);
   }
 
   formatComparacion(value: number | null): string {

@@ -10,7 +10,6 @@ export interface Cabecera {
   apellidos: string;
   nroDni: string;
   fechaSolicitud: string;
-  validacionDocumento: number | null;
   comparacionBiometrica: number | null;
   livenessDetection: number | null;
   estado: EstadoOnboarder;
@@ -34,6 +33,12 @@ export interface Cabecera {
   metadataOCR?: string | null;
   metadataLiveness?: string | null;
   metadataComparacion?: string | null;
+  origen?: string | null;
+  ipOrigenPublica?: string | null;
+  latitud: number | null;
+  longitud: number | null;
+  empresaNombre: string | null;
+  empresaRuc: string | null;
 }
 
 // Tratante (person who processed)
@@ -57,6 +62,7 @@ export interface Detalle {
   fotoSelfie: string | null;
   // firma removed as it is not in backend
   estado: EstadoOnboarder;
+
 }
 
 // Flat response from API
@@ -141,19 +147,6 @@ export function isLivenessPositive(livenessDetection: number | null): boolean {
 export function formatLiveness(livenessDetection: number | null): string {
   if (livenessDetection === null) return 'N/A';
   return isLivenessPositive(livenessDetection) ? 'Positivo' : 'Negativo';
-}
-
-// Helper to check if document validation is positive (>= 90%)
-export function isDocumentoPositive(validacionDocumento: number | null): boolean {
-  const normalized = normalizeScore(validacionDocumento);
-  if (normalized === null) return false;
-  return normalized >= SCORE_THRESHOLD;
-}
-
-// Helper to format document validation for display
-export function formatDocumento(validacionDocumento: number | null): string {
-  if (validacionDocumento === null) return 'N/A';
-  return isDocumentoPositive(validacionDocumento) ? 'Válido' : 'Inválido';
 }
 
 // Helper to check if biometric comparison is positive (>= 90%)

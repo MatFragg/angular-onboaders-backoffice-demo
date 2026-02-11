@@ -52,7 +52,24 @@
       </div>
     </div>
 
-    <!-- Create User Form -->
-    <app-create-user-form (userCreated)="onUserCreated()"></app-create-user-form>
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <div class="action-card" (click)="openCreateUserDialog()">
+        <mat-icon>person_add</mat-icon>
+        <div class="action-info">
+          <span class="action-title">Nuevo Usuario</span>
+          <span class="action-desc">Crear un nuevo usuario en el sistema</span>
+        </div>
+        <mat-icon class="arrow">chevron_right</mat-icon>
+      </div>
+      <a class="action-card" routerLink="/admin/users">
+        <mat-icon>manage_accounts</mat-icon>
+        <div class="action-info">
+          <span class="action-title">Gestionar Usuarios</span>
+          <span class="action-desc">Ver, editar y administrar todos los usuarios</span>
+        </div>
+        <mat-icon class="arrow">chevron_right</mat-icon>
+      </a>
+    </div>
   </div>
 </div>

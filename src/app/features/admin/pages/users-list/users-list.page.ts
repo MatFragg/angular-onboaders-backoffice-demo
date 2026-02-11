@@ -1,11 +1,13 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatSortModule, MatSort } from '@angular/material/sort';
 import { UsersService } from '../../services/users.service';
 import { UsuarioListResponse } from '../../models/user.model';
 import { CreateUserDialogComponent } from '../../components/create-user-form/create-user-form.component';
@@ -21,7 +23,9 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
     MatTableModule,
     MatProgressSpinnerModule,
     MatDialogModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatPaginatorModule,
+    MatSortModule
 ],
   template: `
     <div class="page-container">
@@ -64,19 +68,19 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
           </div>
         } @else {
           <div class="table-container">
-            <table mat-table [dataSource]="users()">
+            <table mat-table [dataSource]="dataSource" matSort>
               <ng-container matColumnDef="nombre">
-                <th mat-header-cell *matHeaderCellDef>Nombre</th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
                 <td mat-cell *matCellDef="let user">{{ user.nombre }}</td>
               </ng-container>
 
               <ng-container matColumnDef="acjMail">
-                <th mat-header-cell *matHeaderCellDef>Email</th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
                 <td mat-cell *matCellDef="let user">{{ user.acjMail }}</td>
               </ng-container>
 
               <ng-container matColumnDef="rol">
-                <th mat-header-cell *matHeaderCellDef>Rol</th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Rol</th>
                 <td mat-cell *matCellDef="let user">
                   <span class="badge" [class]="user.rol.toLowerCase()">
                     {{ user.rol }}
@@ -85,12 +89,12 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
               </ng-container>
 
               <ng-container matColumnDef="subRol">
-                <th mat-header-cell *matHeaderCellDef>Sub-rol</th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Sub-rol</th>
                 <td mat-cell *matCellDef="let user">{{ user.subRol || '-' }}</td>
               </ng-container>
 
               <ng-container matColumnDef="activo">
-                <th mat-header-cell *matHeaderCellDef>Estado</th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
                 <td mat-cell *matCellDef="let user">
                   <span class="status" [class.active]="user.activo">
                     {{ user.activo ? 'Activo' : 'Inactivo' }}
@@ -118,6 +122,7 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
+            <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
           </div>
         }
       </div>
@@ -279,10 +284,14 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
     }
   `]
 })
-export class UsersListPage implements OnInit {
+export class UsersListPage implements OnInit, AfterViewInit {
   private usersService = inject(UsersService);
   private dialog = inject(MatDialog);
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  dataSource = new MatTableDataSource<UsuarioListResponse>();
   users = signal<UsuarioListResponse[]>([]);
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -292,6 +301,11 @@ export class UsersListPage implements OnInit {
     this.loadUsers();
   }
 
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
   loadUsers(): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
@@ -299,6 +313,7 @@ export class UsersListPage implements OnInit {
     this.usersService.getUsers().subscribe({
       next: (users) => {
         this.users.set(users);
+        this.dataSource.data = users;
         this.isLoading.set(false);
       },
       error: (err) => {

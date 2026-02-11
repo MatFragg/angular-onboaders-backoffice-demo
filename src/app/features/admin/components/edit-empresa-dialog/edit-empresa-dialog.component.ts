@@ -1,41 +1,43 @@
 import { Component, inject, OnInit } from '@angular/core';
-
 import { FormsModule } from '@angular/forms';
+
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+import { EmpresasService } from '../../services/empresas.service';
+import { EmpresaResponse } from '../../models/empresa.model';
 import { UsersService } from '../../services/users.service';
-import { UsuarioListResponse, UsuarioUpdateRequest } from '../../models/user.model';
+import { UsuarioListResponse } from '../../models/user.model';
 
-export interface EditUserDialogData {
-  user: UsuarioListResponse;
+export interface EditEmpresaDialogData {
+  empresa: EmpresaResponse;
 }
 
 @Component({
-  selector: 'app-edit-user-dialog',
+  selector: 'app-edit-empresa-dialog',
   standalone: true,
   imports: [
     FormsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatSelectModule,
-    MatProgressSpinnerModule
-],
+    MatProgressSpinnerModule,
+  ],
   template: `
     <h2 mat-dialog-title>
       <button mat-icon-button type="button" (click)="cancel()" [disabled]="isLoading" class="action-close">
         <mat-icon>close</mat-icon>
       </button>
-      <span class="title-text">Editar Usuario</span>
-      <button mat-icon-button type="submit" form="editUserForm" [disabled]="isLoading" class="action-confirm">
+      <span class="title-text">Editar Empresa</span>
+      <button mat-icon-button type="submit" form="editEmpresaForm" [disabled]="isLoading" class="action-confirm">
         @if (isLoading) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else {
@@ -45,61 +47,47 @@ export interface EditUserDialogData {
     </h2>
 
     <mat-dialog-content>
-      <form (ngSubmit)="onSubmit()" class="user-form" id="editUserForm">
+      <form (ngSubmit)="onSubmit()" class="empresa-form" id="editEmpresaForm">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Nombre completo</mat-label>
-          <input matInput 
-            type="text" 
-            [(ngModel)]="nombre" 
+          <mat-label>RUC</mat-label>
+          <input matInput
+            type="text"
+            [(ngModel)]="ruc"
+            name="ruc"
+            readonly>
+          <mat-icon matPrefix>pin</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre de la empresa</mat-label>
+          <input matInput
+            type="text"
+            [(ngModel)]="nombre"
             name="nombre"
             required>
-          <mat-icon matPrefix>person</mat-icon>
+          <mat-icon matPrefix>business</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email corporativo</mat-label>
-          <input matInput 
-            type="email" 
-            [(ngModel)]="email" 
+          <input matInput
+            type="email"
+            [(ngModel)]="email"
             name="email"
             required>
           <mat-icon matPrefix>email</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Nueva contraseña (opcional)</mat-label>
-          <input matInput 
-            [type]="hidePassword ? 'password' : 'text'" 
-            [(ngModel)]="password" 
-            name="password"
-            placeholder="Dejar vacío para mantener la actual">
-          <mat-icon matPrefix>lock</mat-icon>
-          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
-            <mat-icon>{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
-          </button>
+          <mat-label>Usuario encargado</mat-label>
+          <mat-select [(ngModel)]="idUsuarioEncargado" name="idUsuarioEncargado">
+            <mat-option [value]="null">Sin asignar</mat-option>
+            @for (user of availableUsers; track user.id) {
+              <mat-option [value]="user.id">{{ user.nombre }} ({{ user.acjMail }})</mat-option>
+            }
+          </mat-select>
+          <mat-icon matPrefix>person</mat-icon>
         </mat-form-field>
-
-        <div class="role-row">
-          <mat-form-field appearance="outline">
-            <mat-label>Rol</mat-label>
-            <mat-select [(ngModel)]="rol" name="rol" required>
-              <mat-option value="ADMIN">Administrador</mat-option>
-              <mat-option value="USER">Usuario</mat-option>
-            </mat-select>
-            <mat-icon matPrefix>badge</mat-icon>
-          </mat-form-field>
-
-          @if (rol === 'USER') {
-            <mat-form-field appearance="outline">
-              <mat-label>Sub-rol</mat-label>
-              <mat-select [(ngModel)]="subRol" name="subRol" required>
-                <mat-option value="OBSERVADOR">Observador</mat-option>
-                <mat-option value="RESOLUTOR">Resolutor</mat-option>
-              </mat-select>
-              <mat-icon matPrefix>work</mat-icon>
-            </mat-form-field>
-          }
-        </div>
 
         @if (errorMessage) {
           <div class="message error">
@@ -155,7 +143,7 @@ export interface EditUserDialogData {
       max-height: 60vh;
     }
 
-    .user-form {
+    .empresa-form {
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -164,16 +152,6 @@ export interface EditUserDialogData {
 
     .full-width {
       width: 100%;
-    }
-
-    .role-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-
-      mat-form-field {
-        width: 100%;
-      }
     }
 
     .message {
@@ -202,91 +180,72 @@ export interface EditUserDialogData {
     }
 
     @media (max-width: 600px) {
-      .user-form {
+      .empresa-form {
         min-width: auto;
-      }
-
-      .role-row {
-        grid-template-columns: 1fr;
       }
     }
   `]
 })
-export class EditUserDialogComponent implements OnInit {
+export class EditEmpresaDialogComponent implements OnInit {
+  private empresasService = inject(EmpresasService);
   private usersService = inject(UsersService);
-  private dialogRef = inject(MatDialogRef<EditUserDialogComponent>);
-  private data: EditUserDialogData = inject(MAT_DIALOG_DATA);
+  private dialogRef = inject(MatDialogRef<EditEmpresaDialogComponent>);
+  private data: EditEmpresaDialogData = inject(MAT_DIALOG_DATA);
 
-  // Form fields
+  ruc = '';
   nombre = '';
   email = '';
-  password = '';
-  rol: 'ADMIN' | 'USER' = 'USER';
-  subRol: 'OBSERVADOR' | 'RESOLUTOR' = 'OBSERVADOR';
-  
-  hidePassword = true;
+  idUsuarioEncargado: number | null = null;
+
+  availableUsers: UsuarioListResponse[] = [];
   isLoading = false;
   errorMessage = '';
   successMessage = '';
 
   ngOnInit(): void {
-    // Pre-fill form with existing user data
-    const user = this.data.user;
-    this.nombre = user.nombre;
-    this.email = user.acjMail;
-    this.rol = user.rol;
-    this.subRol = user.subRol || 'OBSERVADOR';
+    // Pre-fill form
+    const empresa = this.data.empresa;
+    this.ruc = empresa.ruc;
+    this.nombre = empresa.nombre;
+    this.email = empresa.email;
+    this.idUsuarioEncargado = empresa.idUsuarioEncargado;
+
+    // Load users for dropdown
+    this.usersService.getUsers().subscribe({
+      next: (users) => this.availableUsers = users.filter(u => u.activo),
+      error: (err) => console.error('Error loading users:', err),
+    });
   }
 
   onSubmit(): void {
-    // Validations
     if (!this.nombre || !this.email) {
       this.errorMessage = 'Por favor completa todos los campos requeridos';
       return;
     }
 
-    // Email format validation
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(this.email)) {
-      this.errorMessage = 'El formato del email no es válido';
-      return;
-    }
-
-    if (this.password && this.password.length < 6) {
-      this.errorMessage = 'La contraseña debe tener al menos 6 caracteres';
-      return;
-    }
-
-    if (this.rol === 'USER' && !this.subRol) {
-      this.errorMessage = 'Selecciona un sub-rol';
+      this.errorMessage = 'Por favor ingresa un email válido';
       return;
     }
 
     this.isLoading = true;
     this.errorMessage = '';
-    this.successMessage = '';
 
-    const updateData: UsuarioUpdateRequest = {
+    this.empresasService.updateEmpresa(this.ruc, {
+      ruc: this.ruc,
       nombre: this.nombre,
-      acjMail: this.email,
-      rol: this.rol,
-      ...(this.password && { password: this.password }),
-      ...(this.rol === 'USER' && { subRol: this.subRol })
-    };
-
-    this.usersService.updateUser(this.data.user.id, updateData).subscribe({
+      email: this.email,
+      idUsuarioEncargado: this.idUsuarioEncargado,
+    }).subscribe({
       next: () => {
-        this.isLoading = false;
-        this.successMessage = 'Usuario actualizado exitosamente';
-        
-        setTimeout(() => {
-          this.dialogRef.close(true);
-        }, 1500);
+        this.successMessage = 'Empresa actualizada exitosamente';
+        setTimeout(() => this.dialogRef.close(true), 1000);
       },
       error: (err) => {
+        this.errorMessage = err.error?.message || 'Error al actualizar la empresa';
         this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Error al actualizar usuario';
-      }
+      },
     });
   }
 

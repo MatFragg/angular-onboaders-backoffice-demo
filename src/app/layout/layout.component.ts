@@ -27,6 +27,7 @@ export class LayoutComponent {
   // Admin-only nav items
   private adminNavItems: NavItem[] = [
     { label: 'Usuarios', icon: 'manage_accounts', route: '/admin/users' },
+    { label: 'Empresas', icon: 'business', route: '/admin/empresas' },
   ];
   
   // Computed nav items based on user role
@@ -37,4 +38,8 @@ export class LayoutComponent {
     }
     return items;
   });
+
+  onLogout(): void {
+    this.authService.logout();
+  }
 }
