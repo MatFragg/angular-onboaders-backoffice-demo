@@ -36,6 +36,7 @@ export class CreateUserDialogComponent {
   nombre = '';
   email = '';
   password = '';
+  dni='';
   confirmPassword = '';
   tipoUsuario: TipoUsuario = 'CORRIENTE';
   subRol: SubRol = 'OBSERVADOR';
@@ -65,6 +66,11 @@ export class CreateUserDialogComponent {
       return;
     }
 
+    if (this.dni.length !== 8) {
+      this.errorMessage = 'El DNI debe tener 8 caracteres';
+      return;
+    }
+
     if (this.password.length < 6) {
       this.errorMessage = 'La contraseña debe tener al menos 6 caracteres';
       return;
@@ -81,7 +87,8 @@ export class CreateUserDialogComponent {
 
     const registerData = {
       nombre: this.nombre,
-      acjMail: this.email,
+      email: this.email,
+      dni: this.dni,
       password: this.password,
       activo: true,
       tipoUsuario: this.tipoUsuario,

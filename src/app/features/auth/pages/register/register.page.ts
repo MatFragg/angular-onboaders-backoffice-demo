@@ -220,6 +220,7 @@ export class RegisterPage {
   // Form fields
   nombre = '';
   email = '';
+  dni='';
   password = '';
   confirmPassword = '';
   tipoUsuario: TipoUsuario = 'CORRIENTE';
@@ -259,7 +260,8 @@ export class RegisterPage {
 
     const registerData = {
       nombre: this.nombre,
-      acjMail: this.email,
+      email: this.email,
+      dni: this.dni,
       password: this.password,
       activo: true,
       tipoUsuario: this.tipoUsuario,
