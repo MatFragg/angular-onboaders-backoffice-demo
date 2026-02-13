@@ -11,6 +11,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { UsersService } from '../../services/users.service';
 import { UsuarioListResponse, UsuarioUpdateRequest } from '../../models/user.model';
+import { EmpresasService } from '../../services/empresas.service';
+import { EmpresaResponse } from '../../models/empresa.model';
 
 export interface EditUserDialogData {
   user: UsuarioListResponse;
@@ -66,6 +68,21 @@ export interface EditUserDialogData {
           <mat-icon matPrefix>email</mat-icon>
         </mat-form-field>
 
+        <div class="role-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Empresa (RUC)</mat-label>
+            <mat-select [(ngModel)]="ruc" name="ruc">
+              <mat-option [value]="''">Ninguna</mat-option>
+              @for (empresa of availableEmpresas; track empresa.ruc) {
+                <mat-option [value]="empresa.ruc">
+                  {{ empresa.nombre }} ({{ empresa.ruc }})
+                </mat-option>
+              }
+            </mat-select>
+            <mat-icon matPrefix>business</mat-icon>
+          </mat-form-field>
+        </div>
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Nueva contraseña (opcional)</mat-label>
           <input matInput 
@@ -80,25 +97,15 @@ export interface EditUserDialogData {
         </mat-form-field>
 
         <div class="role-row">
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" class="full-width">
             <mat-label>Rol</mat-label>
             <mat-select [(ngModel)]="rol" name="rol" required>
+              <mat-option value="SUPERADMIN">Super Admin</mat-option>
               <mat-option value="ADMIN">Administrador</mat-option>
               <mat-option value="USER">Usuario</mat-option>
             </mat-select>
             <mat-icon matPrefix>badge</mat-icon>
           </mat-form-field>
-
-          @if (rol === 'USER') {
-            <mat-form-field appearance="outline">
-              <mat-label>Sub-rol</mat-label>
-              <mat-select [(ngModel)]="subRol" name="subRol" required>
-                <mat-option value="OBSERVADOR">Observador</mat-option>
-                <mat-option value="RESOLUTOR">Resolutor</mat-option>
-              </mat-select>
-              <mat-icon matPrefix>work</mat-icon>
-            </mat-form-field>
-          }
         </div>
 
         @if (errorMessage) {
@@ -214,28 +221,37 @@ export interface EditUserDialogData {
 })
 export class EditUserDialogComponent implements OnInit {
   private usersService = inject(UsersService);
+  private empresasService = inject(EmpresasService);
   private dialogRef = inject(MatDialogRef<EditUserDialogComponent>);
   private data: EditUserDialogData = inject(MAT_DIALOG_DATA);
 
   // Form fields
   nombre = '';
   email = '';
+  ruc = '';
   password = '';
-  rol: 'ADMIN' | 'USER' = 'USER';
-  subRol: 'OBSERVADOR' | 'RESOLUTOR' = 'OBSERVADOR';
+  rol: 'SUPERADMIN' | 'ADMIN' | 'USER' = 'USER';
   
   hidePassword = true;
   isLoading = false;
   errorMessage = '';
   successMessage = '';
+  
+  availableEmpresas: EmpresaResponse[] = [];
 
   ngOnInit(): void {
+    // Load companies
+    this.empresasService.getEmpresas('', 0, 100).subscribe({
+      next: (page) => this.availableEmpresas = page.content,
+      error: (err) => console.error('Error loading companies:', err)
+    });
+
     // Pre-fill form with existing user data
     const user = this.data.user;
     this.nombre = user.nombre;
-    this.email = user.acjMail;
+    this.email = user.email;
+    this.ruc = user.ruc || '';
     this.rol = user.rol;
-    this.subRol = user.subRol || 'OBSERVADOR';
   }
 
   onSubmit(): void {
@@ -252,15 +268,19 @@ export class EditUserDialogComponent implements OnInit {
       return;
     }
 
+    if (this.ruc && this.ruc.length !== 11) {
+      this.errorMessage = 'El RUC debe tener 11 caracteres';
+      return;
+    }
+
     if (this.password && this.password.length < 6) {
       this.errorMessage = 'La contraseña debe tener al menos 6 caracteres';
       return;
     }
 
-    if (this.rol === 'USER' && !this.subRol) {
-      this.errorMessage = 'Selecciona un sub-rol';
-      return;
-    }
+    // if (this.rol === 'USER') {
+    //   // No subRol validation needed
+    // }
 
     this.isLoading = true;
     this.errorMessage = '';
@@ -268,10 +288,10 @@ export class EditUserDialogComponent implements OnInit {
 
     const updateData: UsuarioUpdateRequest = {
       nombre: this.nombre,
-      acjMail: this.email,
+      email: this.email,
+      ...(this.ruc && { empresaRuc: this.ruc }),
       rol: this.rol,
-      ...(this.password && { password: this.password }),
-      ...(this.rol === 'USER' && { subRol: this.subRol })
+      ...(this.password && { password: this.password })
     };
 
     this.usersService.updateUser(this.data.user.id, updateData).subscribe({

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -10,7 +10,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AuthService } from '../../../../core/services/auth.service';
-import { TipoUsuario, SubRol } from '../../../../core/models/auth.model';
+import { TipoUsuario } from '../../../../core/models/auth.model';
+import { EmpresasService } from '../../services/empresas.service';
+import { EmpresaResponse } from '../../models/empresa.model';
 
 @Component({
   selector: 'app-create-user-dialog',
@@ -28,23 +30,37 @@ import { TipoUsuario, SubRol } from '../../../../core/models/auth.model';
   templateUrl: './create-user-form.component.html',
   styleUrls: ['./create-user-form.component.scss']
 })
-export class CreateUserDialogComponent {
+export class CreateUserDialogComponent implements OnInit {
   private authService = inject(AuthService);
+  private empresasService = inject(EmpresasService);
   private dialogRef = inject(MatDialogRef<CreateUserDialogComponent>);
 
   // Form fields
   nombre = '';
   email = '';
   password = '';
+  dni='';
+  empresaRuc='';
   confirmPassword = '';
-  tipoUsuario: TipoUsuario = 'CORRIENTE';
-  subRol: SubRol = 'OBSERVADOR';
+  tipoUsuario: TipoUsuario = 'USER';
   
   hidePassword = true;
   hideConfirmPassword = true;
   isLoading = false;
   errorMessage = '';
   successMessage = '';
+  
+  availableEmpresas: EmpresaResponse[] = [];
+
+  ngOnInit(): void {
+    // Load companies for dropdown
+    this.empresasService.getEmpresas('', 0, 100).subscribe({
+      next: (page) => {
+        this.availableEmpresas = page.content;
+      },
+      error: (err) => console.error('Error loading companies:', err)
+    });
+  }
 
   onSubmit(): void {
     // Validations
@@ -65,15 +81,24 @@ export class CreateUserDialogComponent {
       return;
     }
 
+    if (this.dni.length !== 8) {
+      this.errorMessage = 'El DNI debe tener 8 caracteres';
+      return;
+    }
+
+    if (this.empresaRuc && this.empresaRuc.length !== 11) {
+      this.errorMessage = 'El RUC debe tener 11 caracteres';
+      return;
+    }
+
     if (this.password.length < 6) {
       this.errorMessage = 'La contraseña debe tener al menos 6 caracteres';
       return;
     }
 
-    if (this.tipoUsuario === 'CORRIENTE' && !this.subRol) {
-      this.errorMessage = 'Selecciona un sub-rol';
-      return;
-    }
+    // if (this.tipoUsuario === 'USER') {
+    //   // No subRol validation needed anymore
+    // }
 
     this.isLoading = true;
     this.errorMessage = '';
@@ -81,11 +106,12 @@ export class CreateUserDialogComponent {
 
     const registerData = {
       nombre: this.nombre,
-      acjMail: this.email,
+      email: this.email,
+      dni: this.dni,
+      ...(this.empresaRuc && { empresaRuc: this.empresaRuc }),
       password: this.password,
       activo: true,
-      tipoUsuario: this.tipoUsuario,
-      ...(this.tipoUsuario === 'CORRIENTE' && { subRol: this.subRol })
+      tipoUsuario: this.tipoUsuario
     };
 
     this.authService.register(registerData).subscribe({
@@ -112,10 +138,10 @@ export class CreateUserDialogComponent {
   resetForm(): void {
     this.nombre = '';
     this.email = '';
+    this.empresaRuc = '';
     this.password = '';
     this.confirmPassword = '';
-    this.tipoUsuario = 'CORRIENTE';
-    this.subRol = 'OBSERVADOR';
+    this.tipoUsuario = 'USER';
     this.successMessage = '';
     this.errorMessage = '';
   }

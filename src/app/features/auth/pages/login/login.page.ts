@@ -171,7 +171,7 @@ export class LoginPage {
     this.errorMessage = '';
 
     this.authService.login({
-      acjMail: this.email,
+      email: this.email,
       password: this.password
     }).subscribe({
       next: () => {

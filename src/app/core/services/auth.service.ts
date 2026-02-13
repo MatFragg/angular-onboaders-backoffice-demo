@@ -31,9 +31,9 @@ export class AuthService {
         }
         this.storeUser({
           id: response.id,
-          acjMail: response.acjMail
+          email: response.email
         });
-        this.currentUser.set({ id: response.id, acjMail: response.acjMail });
+        this.currentUser.set({ id: response.id, email: response.email });
         this.isAuthenticated.set(true);
         this.userRoles.set(this.getRolesFromToken());
       }),

@@ -4,34 +4,34 @@
 
 // Login request DTO
 export interface LoginRequest {
-  acjMail: string;
+  email: string;
   password: string;
 }
 
 // Register request DTO
-export type TipoUsuario = 'ADMIN' | 'CORRIENTE';
-export type SubRol = 'OBSERVADOR' | 'RESOLUTOR';
+export type TipoUsuario = 'SUPERADMIN' | 'ADMIN' | 'USER';
 
 export interface RegisterRequest {
   nombre: string;
-  acjMail: string;
+  email: string;
   password: string;
+  dni: string;
+  ruc?: string;
   activo: boolean;
   tipoUsuario: TipoUsuario;
-  subRol?: SubRol; // Only required when tipoUsuario is CORRIENTE
 }
 
 // Auth response DTO (from /api/auth/login and /api/auth/register)
 export interface AuthResponse {
   id: number;
-  acjMail: string;
+  email: string;
   token: string | null;
 }
 
 // Current user info (decoded from token or stored)
 export interface CurrentUser {
   id: number;
-  acjMail: string;
+  email: string;
   nombre?: string;
   roles?: string[];
 }
