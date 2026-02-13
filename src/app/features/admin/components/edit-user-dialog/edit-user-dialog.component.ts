@@ -67,6 +67,16 @@ export interface EditUserDialogData {
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
+          <mat-label>RUC (Opcional)</mat-label>
+          <input matInput 
+            type="text" 
+            [(ngModel)]="ruc" 
+            name="ruc"
+            placeholder="10123456789">
+          <mat-icon matPrefix>business</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Nueva contraseña (opcional)</mat-label>
           <input matInput 
             [type]="hidePassword ? 'password' : 'text'" 
@@ -210,6 +220,7 @@ export class EditUserDialogComponent implements OnInit {
   // Form fields
   nombre = '';
   email = '';
+  ruc = '';
   password = '';
   rol: 'SUPERADMIN' | 'ADMIN' | 'USER' = 'USER';
   
@@ -223,6 +234,7 @@ export class EditUserDialogComponent implements OnInit {
     const user = this.data.user;
     this.nombre = user.nombre;
     this.email = user.acjMail;
+    this.ruc = user.ruc || '';
     this.rol = user.rol;
   }
 
@@ -237,6 +249,11 @@ export class EditUserDialogComponent implements OnInit {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(this.email)) {
       this.errorMessage = 'El formato del email no es válido';
+      return;
+    }
+
+    if (this.ruc && this.ruc.length !== 11) {
+      this.errorMessage = 'El RUC debe tener 11 caracteres';
       return;
     }
 
@@ -256,6 +273,7 @@ export class EditUserDialogComponent implements OnInit {
     const updateData: UsuarioUpdateRequest = {
       nombre: this.nombre,
       acjMail: this.email,
+      ...(this.ruc && { empresaRuc: this.ruc }),
       rol: this.rol,
       ...(this.password && { password: this.password })
     };

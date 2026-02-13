@@ -7,6 +7,7 @@ export interface UsuarioListResponse {
   id: number;
   nombre: string;
   acjMail: string;
+  ruc?: string;
   activo: boolean;
   rol: 'SUPERADMIN' | 'ADMIN' | 'USER';
 }
@@ -15,6 +16,7 @@ export interface UsuarioListResponse {
 export interface UsuarioUpdateRequest {
   nombre: string;
   acjMail: string;
+  empresaRuc?: string;
   password?: string;  // Optional - only update if provided
   rol: 'SUPERADMIN' | 'ADMIN' | 'USER';
 }

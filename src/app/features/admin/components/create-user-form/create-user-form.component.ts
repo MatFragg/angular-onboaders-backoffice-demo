@@ -37,6 +37,7 @@ export class CreateUserDialogComponent {
   email = '';
   password = '';
   dni='';
+  empresaRuc='';
   confirmPassword = '';
   tipoUsuario: TipoUsuario = 'USER';
   
@@ -70,6 +71,11 @@ export class CreateUserDialogComponent {
       return;
     }
 
+    if (this.empresaRuc && this.empresaRuc.length !== 11) {
+      this.errorMessage = 'El RUC debe tener 11 caracteres';
+      return;
+    }
+
     if (this.password.length < 6) {
       this.errorMessage = 'La contraseña debe tener al menos 6 caracteres';
       return;
@@ -87,6 +93,7 @@ export class CreateUserDialogComponent {
       nombre: this.nombre,
       email: this.email,
       dni: this.dni,
+      ...(this.empresaRuc && { empresaRuc: this.empresaRuc }),
       password: this.password,
       activo: true,
       tipoUsuario: this.tipoUsuario
@@ -116,6 +123,7 @@ export class CreateUserDialogComponent {
   resetForm(): void {
     this.nombre = '';
     this.email = '';
+    this.empresaRuc = '';
     this.password = '';
     this.confirmPassword = '';
     this.tipoUsuario = 'USER';

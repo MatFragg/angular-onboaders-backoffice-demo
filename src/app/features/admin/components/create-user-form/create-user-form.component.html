@@ -36,16 +36,29 @@
       <mat-icon matPrefix>email</mat-icon>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>DNI</mat-label>
-      <input matInput 
-        type="text" 
-        [(ngModel)]="dni" 
-        name="dni"
-        placeholder="12345678"
-        required>
-      <mat-icon matPrefix>badge</mat-icon>
-    </mat-form-field>
+    <div class="password-row">
+      <mat-form-field appearance="outline" >
+        <mat-label>DNI</mat-label>
+        <input matInput 
+          type="text" 
+          [(ngModel)]="dni" 
+          name="dni"
+          placeholder="12345678"
+          required>
+        <mat-icon matPrefix>badge</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>RUC (Opcional)</mat-label>
+        <input matInput 
+          type="text" 
+          [(ngModel)]="empresaRuc" 
+          name="empresaRuc"
+          placeholder="10123456789">
+        <mat-icon matPrefix>business</mat-icon>
+      </mat-form-field>
+    </div>
+    
 
     <div class="password-row">
       <mat-form-field appearance="outline">
