@@ -1,10 +1,12 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject, inject, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { OnboarderCompleto, formatLiveness, isLivenessPositive, formatEstado, normalizeScore } from '../../../models/onboarder.model';
 import { OnboardersService } from '../../../services/onboarders.service';
+import { environment } from '../../../../../../environments/environment.local';
+import mapboxgl from 'mapbox-gl';
 
 /**
  * DetailDialogComponent
@@ -21,9 +23,14 @@ import { OnboardersService } from '../../../services/onboarders.service';
   templateUrl: './detail-dialog.component.html',
   styleUrls: ['./detail-dialog.component.scss']
 })
-export class DetailDialogComponent {
+export class DetailDialogComponent implements AfterViewInit, OnDestroy {
   private onboardersService = inject(OnboardersService);
   isProcessing = false;
+  addressText = 'Cargando dirección...';
+
+  // Map state
+  @ViewChild('mapContainer') mapContainer?: ElementRef<HTMLDivElement>;
+  private map?: mapboxgl.Map;
 
   // Lightbox state
   isLightboxOpen = false;
@@ -38,6 +45,54 @@ export class DetailDialogComponent {
   get cabecera() { return this.data.cabecera; }
   get detalle() { return this.data.detalle; }
   get isPending() { return this.cabecera.estado === 'PENDIENTE'; }
+  get hasCoordinates() { return this.cabecera.latitud !== null && this.cabecera.longitud !== null; }
+
+  ngAfterViewInit(): void {
+    if (this.hasCoordinates && this.mapContainer) {
+      // Delay map init so the dialog container has fully rendered with correct dimensions
+      setTimeout(() => this.initMap(), 300);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.map?.remove();
+  }
+
+  private initMap(): void {
+    const lng = this.cabecera.longitud!;
+    const lat = this.cabecera.latitud!;
+
+    this.map = new mapboxgl.Map({
+      accessToken: environment.mapboxToken,
+      container: this.mapContainer!.nativeElement,
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: [lng, lat],
+      zoom: 14,
+      interactive: false
+    });
+
+    new mapboxgl.Marker({ color: '#5C6BC0' })
+      .setLngLat([lng, lat])
+      .addTo(this.map);
+
+    this.reverseGeocode(lat, lng);
+  }
+
+  private reverseGeocode(lat: number, lng: number): void {
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${environment.mapboxToken}&language=es`;
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if (data.features?.length > 0) {
+          this.addressText = data.features[0].place_name;
+        } else {
+          this.addressText = `${lat}, ${lng}`;
+        }
+      })
+      .catch(() => {
+        this.addressText = `${lat}, ${lng}`;
+      });
+  }
 
   close(): void {
     this.dialogRef.close();
