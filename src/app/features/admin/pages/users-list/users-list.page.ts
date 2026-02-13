@@ -83,15 +83,12 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Rol</th>
                 <td mat-cell *matCellDef="let user">
                   <span class="badge" [class]="user.rol.toLowerCase()">
-                    {{ user.rol }}
+                    {{ user.rol === 'SUPERADMIN' ? 'Super Admin' : user.rol }}
                   </span>
                 </td>
               </ng-container>
 
-              <ng-container matColumnDef="subRol">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Sub-rol</th>
-                <td mat-cell *matCellDef="let user">{{ user.subRol || '-' }}</td>
-              </ng-container>
+
 
               <ng-container matColumnDef="activo">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
@@ -248,6 +245,11 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
         color: var(--color-primary-700);
       }
 
+      &.superadmin {
+        background: var(--color-secondary-100);
+        color: var(--color-secondary-700);
+      }
+
       &.user {
         background: var(--color-neutral-200);
         color: var(--color-neutral-700);
@@ -295,7 +297,7 @@ export class UsersListPage implements OnInit, AfterViewInit {
   users = signal<UsuarioListResponse[]>([]);
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
-  displayedColumns = ['nombre', 'acjMail', 'rol', 'subRol', 'activo', 'acciones'];
+  displayedColumns = ['nombre', 'acjMail', 'rol', 'activo', 'acciones'];
 
   ngOnInit(): void {
     this.loadUsers();

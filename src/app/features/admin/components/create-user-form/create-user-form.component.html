@@ -77,25 +77,15 @@
     </div>
 
     <div class="role-row">
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Tipo de usuario</mat-label>
         <mat-select [(ngModel)]="tipoUsuario" name="tipoUsuario" required>
+          <mat-option value="SUPERADMIN">Super Admin</mat-option>
           <mat-option value="ADMIN">Administrador</mat-option>
-          <mat-option value="CORRIENTE">Usuario Corriente</mat-option>
+          <mat-option value="USER">Usuario</mat-option>
         </mat-select>
         <mat-icon matPrefix>badge</mat-icon>
       </mat-form-field>
-
-      @if (tipoUsuario === 'CORRIENTE') {
-        <mat-form-field appearance="outline">
-          <mat-label>Sub-rol</mat-label>
-          <mat-select [(ngModel)]="subRol" name="subRol" required>
-            <mat-option value="OBSERVADOR">Observador</mat-option>
-            <mat-option value="RESOLUTOR">Resolutor</mat-option>
-          </mat-select>
-          <mat-icon matPrefix>work</mat-icon>
-        </mat-form-field>
-      }
     </div>
 
     @if (errorMessage) {

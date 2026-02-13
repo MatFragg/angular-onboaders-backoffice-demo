@@ -80,25 +80,15 @@ export interface EditUserDialogData {
         </mat-form-field>
 
         <div class="role-row">
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" class="full-width">
             <mat-label>Rol</mat-label>
             <mat-select [(ngModel)]="rol" name="rol" required>
+              <mat-option value="SUPERADMIN">Super Admin</mat-option>
               <mat-option value="ADMIN">Administrador</mat-option>
               <mat-option value="USER">Usuario</mat-option>
             </mat-select>
             <mat-icon matPrefix>badge</mat-icon>
           </mat-form-field>
-
-          @if (rol === 'USER') {
-            <mat-form-field appearance="outline">
-              <mat-label>Sub-rol</mat-label>
-              <mat-select [(ngModel)]="subRol" name="subRol" required>
-                <mat-option value="OBSERVADOR">Observador</mat-option>
-                <mat-option value="RESOLUTOR">Resolutor</mat-option>
-              </mat-select>
-              <mat-icon matPrefix>work</mat-icon>
-            </mat-form-field>
-          }
         </div>
 
         @if (errorMessage) {
@@ -221,8 +211,7 @@ export class EditUserDialogComponent implements OnInit {
   nombre = '';
   email = '';
   password = '';
-  rol: 'ADMIN' | 'USER' = 'USER';
-  subRol: 'OBSERVADOR' | 'RESOLUTOR' = 'OBSERVADOR';
+  rol: 'SUPERADMIN' | 'ADMIN' | 'USER' = 'USER';
   
   hidePassword = true;
   isLoading = false;
@@ -235,7 +224,6 @@ export class EditUserDialogComponent implements OnInit {
     this.nombre = user.nombre;
     this.email = user.acjMail;
     this.rol = user.rol;
-    this.subRol = user.subRol || 'OBSERVADOR';
   }
 
   onSubmit(): void {
@@ -257,10 +245,9 @@ export class EditUserDialogComponent implements OnInit {
       return;
     }
 
-    if (this.rol === 'USER' && !this.subRol) {
-      this.errorMessage = 'Selecciona un sub-rol';
-      return;
-    }
+    // if (this.rol === 'USER') {
+    //   // No subRol validation needed
+    // }
 
     this.isLoading = true;
     this.errorMessage = '';
@@ -270,8 +257,7 @@ export class EditUserDialogComponent implements OnInit {
       nombre: this.nombre,
       acjMail: this.email,
       rol: this.rol,
-      ...(this.password && { password: this.password }),
-      ...(this.rol === 'USER' && { subRol: this.subRol })
+      ...(this.password && { password: this.password })
     };
 
     this.usersService.updateUser(this.data.user.id, updateData).subscribe({

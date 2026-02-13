@@ -9,8 +9,7 @@ export interface LoginRequest {
 }
 
 // Register request DTO
-export type TipoUsuario = 'ADMIN' | 'CORRIENTE';
-export type SubRol = 'OBSERVADOR' | 'RESOLUTOR';
+export type TipoUsuario = 'SUPERADMIN' | 'ADMIN' | 'USER';
 
 export interface RegisterRequest {
   nombre: string;
@@ -19,7 +18,6 @@ export interface RegisterRequest {
   dni: string;
   activo: boolean;
   tipoUsuario: TipoUsuario;
-  subRol?: SubRol; // Only required when tipoUsuario is CORRIENTE
 }
 
 // Auth response DTO (from /api/auth/login and /api/auth/register)

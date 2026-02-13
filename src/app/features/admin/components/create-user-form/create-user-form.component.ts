@@ -10,7 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AuthService } from '../../../../core/services/auth.service';
-import { TipoUsuario, SubRol } from '../../../../core/models/auth.model';
+import { TipoUsuario } from '../../../../core/models/auth.model';
 
 @Component({
   selector: 'app-create-user-dialog',
@@ -38,8 +38,7 @@ export class CreateUserDialogComponent {
   password = '';
   dni='';
   confirmPassword = '';
-  tipoUsuario: TipoUsuario = 'CORRIENTE';
-  subRol: SubRol = 'OBSERVADOR';
+  tipoUsuario: TipoUsuario = 'USER';
   
   hidePassword = true;
   hideConfirmPassword = true;
@@ -76,10 +75,9 @@ export class CreateUserDialogComponent {
       return;
     }
 
-    if (this.tipoUsuario === 'CORRIENTE' && !this.subRol) {
-      this.errorMessage = 'Selecciona un sub-rol';
-      return;
-    }
+    // if (this.tipoUsuario === 'USER') {
+    //   // No subRol validation needed anymore
+    // }
 
     this.isLoading = true;
     this.errorMessage = '';
@@ -91,8 +89,7 @@ export class CreateUserDialogComponent {
       dni: this.dni,
       password: this.password,
       activo: true,
-      tipoUsuario: this.tipoUsuario,
-      ...(this.tipoUsuario === 'CORRIENTE' && { subRol: this.subRol })
+      tipoUsuario: this.tipoUsuario
     };
 
     this.authService.register(registerData).subscribe({
@@ -121,8 +118,7 @@ export class CreateUserDialogComponent {
     this.email = '';
     this.password = '';
     this.confirmPassword = '';
-    this.tipoUsuario = 'CORRIENTE';
-    this.subRol = 'OBSERVADOR';
+    this.tipoUsuario = 'USER';
     this.successMessage = '';
     this.errorMessage = '';
   }

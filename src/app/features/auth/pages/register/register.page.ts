@@ -11,7 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AuthService } from '../../../../core/services/auth.service';
-import { TipoUsuario, SubRol } from '../../../../core/models/auth.model';
+import { TipoUsuario } from '../../../../core/models/auth.model';
 
 @Component({
   selector: 'app-register-page',
@@ -89,22 +89,12 @@ import { TipoUsuario, SubRol } from '../../../../core/models/auth.model';
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Tipo de usuario</mat-label>
               <mat-select [(ngModel)]="tipoUsuario" name="tipoUsuario" required>
+                <mat-option value="SUPERADMIN">Super Admin</mat-option>
                 <mat-option value="ADMIN">Administrador</mat-option>
-                <mat-option value="CORRIENTE">Usuario Corriente</mat-option>
+                <mat-option value="USER">Usuario</mat-option>
               </mat-select>
               <mat-icon matPrefix>badge</mat-icon>
             </mat-form-field>
-
-            @if (tipoUsuario === 'CORRIENTE') {
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Sub-rol</mat-label>
-                <mat-select [(ngModel)]="subRol" name="subRol" required>
-                  <mat-option value="OBSERVADOR">Observador</mat-option>
-                  <mat-option value="RESOLUTOR">Resolutor</mat-option>
-                </mat-select>
-                <mat-icon matPrefix>work</mat-icon>
-              </mat-form-field>
-            }
 
             @if (errorMessage) {
               <div class="error-message">
@@ -223,8 +213,7 @@ export class RegisterPage {
   dni='';
   password = '';
   confirmPassword = '';
-  tipoUsuario: TipoUsuario = 'CORRIENTE';
-  subRol: SubRol = 'OBSERVADOR';
+  tipoUsuario: TipoUsuario = 'USER';
   
   hidePassword = true;
   hideConfirmPassword = true;
@@ -249,11 +238,6 @@ export class RegisterPage {
       return;
     }
 
-    if (this.tipoUsuario === 'CORRIENTE' && !this.subRol) {
-      this.errorMessage = 'Selecciona un sub-rol';
-      return;
-    }
-
     this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
@@ -264,8 +248,7 @@ export class RegisterPage {
       dni: this.dni,
       password: this.password,
       activo: true,
-      tipoUsuario: this.tipoUsuario,
-      ...(this.tipoUsuario === 'CORRIENTE' && { subRol: this.subRol })
+      tipoUsuario: this.tipoUsuario
     };
 
     this.authService.register(registerData).subscribe({

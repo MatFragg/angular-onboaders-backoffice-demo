@@ -8,8 +8,7 @@ export interface UsuarioListResponse {
   nombre: string;
   acjMail: string;
   activo: boolean;
-  rol: 'ADMIN' | 'USER';  // ADMIN or USER
-  subRol?: 'OBSERVADOR' | 'RESOLUTOR' | null;  // Only for USER (UsuarioCorriente)
+  rol: 'SUPERADMIN' | 'ADMIN' | 'USER';
 }
 
 // Request DTO for PUT /api/usuarios/{id}
@@ -17,7 +16,6 @@ export interface UsuarioUpdateRequest {
   nombre: string;
   acjMail: string;
   password?: string;  // Optional - only update if provided
-  rol: 'ADMIN' | 'USER';
-  subRol?: 'OBSERVADOR' | 'RESOLUTOR' | null;
+  rol: 'SUPERADMIN' | 'ADMIN' | 'USER';
 }
 
