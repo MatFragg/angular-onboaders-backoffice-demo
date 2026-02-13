@@ -49,12 +49,15 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>RUC (Opcional)</mat-label>
-        <input matInput 
-          type="text" 
-          [(ngModel)]="empresaRuc" 
-          name="empresaRuc"
-          placeholder="10123456789">
+        <mat-label>Empresa (RUC)</mat-label>
+        <mat-select [(ngModel)]="empresaRuc" name="empresaRuc">
+          <mat-option [value]="''">Ninguna</mat-option>
+          @for (empresa of availableEmpresas; track empresa.ruc) {
+            <mat-option [value]="empresa.ruc">
+              {{ empresa.nombre }} ({{ empresa.ruc }})
+            </mat-option>
+          }
+        </mat-select>
         <mat-icon matPrefix>business</mat-icon>
       </mat-form-field>
     </div>

@@ -11,6 +11,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { UsersService } from '../../services/users.service';
 import { UsuarioListResponse, UsuarioUpdateRequest } from '../../models/user.model';
+import { EmpresasService } from '../../services/empresas.service';
+import { EmpresaResponse } from '../../models/empresa.model';
 
 export interface EditUserDialogData {
   user: UsuarioListResponse;
@@ -66,15 +68,20 @@ export interface EditUserDialogData {
           <mat-icon matPrefix>email</mat-icon>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>RUC (Opcional)</mat-label>
-          <input matInput 
-            type="text" 
-            [(ngModel)]="ruc" 
-            name="ruc"
-            placeholder="10123456789">
-          <mat-icon matPrefix>business</mat-icon>
-        </mat-form-field>
+        <div class="role-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Empresa (RUC)</mat-label>
+            <mat-select [(ngModel)]="ruc" name="ruc">
+              <mat-option [value]="''">Ninguna</mat-option>
+              @for (empresa of availableEmpresas; track empresa.ruc) {
+                <mat-option [value]="empresa.ruc">
+                  {{ empresa.nombre }} ({{ empresa.ruc }})
+                </mat-option>
+              }
+            </mat-select>
+            <mat-icon matPrefix>business</mat-icon>
+          </mat-form-field>
+        </div>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Nueva contraseña (opcional)</mat-label>
@@ -214,6 +221,7 @@ export interface EditUserDialogData {
 })
 export class EditUserDialogComponent implements OnInit {
   private usersService = inject(UsersService);
+  private empresasService = inject(EmpresasService);
   private dialogRef = inject(MatDialogRef<EditUserDialogComponent>);
   private data: EditUserDialogData = inject(MAT_DIALOG_DATA);
 
@@ -228,8 +236,16 @@ export class EditUserDialogComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   successMessage = '';
+  
+  availableEmpresas: EmpresaResponse[] = [];
 
   ngOnInit(): void {
+    // Load companies
+    this.empresasService.getEmpresas('', 0, 100).subscribe({
+      next: (page) => this.availableEmpresas = page.content,
+      error: (err) => console.error('Error loading companies:', err)
+    });
+
     // Pre-fill form with existing user data
     const user = this.data.user;
     this.nombre = user.nombre;

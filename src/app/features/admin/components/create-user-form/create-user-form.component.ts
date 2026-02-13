@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -11,6 +11,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { TipoUsuario } from '../../../../core/models/auth.model';
+import { EmpresasService } from '../../services/empresas.service';
+import { EmpresaResponse } from '../../models/empresa.model';
 
 @Component({
   selector: 'app-create-user-dialog',
@@ -28,8 +30,9 @@ import { TipoUsuario } from '../../../../core/models/auth.model';
   templateUrl: './create-user-form.component.html',
   styleUrls: ['./create-user-form.component.scss']
 })
-export class CreateUserDialogComponent {
+export class CreateUserDialogComponent implements OnInit {
   private authService = inject(AuthService);
+  private empresasService = inject(EmpresasService);
   private dialogRef = inject(MatDialogRef<CreateUserDialogComponent>);
 
   // Form fields
@@ -46,6 +49,18 @@ export class CreateUserDialogComponent {
   isLoading = false;
   errorMessage = '';
   successMessage = '';
+  
+  availableEmpresas: EmpresaResponse[] = [];
+
+  ngOnInit(): void {
+    // Load companies for dropdown
+    this.empresasService.getEmpresas('', 0, 100).subscribe({
+      next: (page) => {
+        this.availableEmpresas = page.content;
+      },
+      error: (err) => console.error('Error loading companies:', err)
+    });
+  }
 
   onSubmit(): void {
     // Validations
