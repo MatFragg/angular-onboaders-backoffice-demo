@@ -6,7 +6,7 @@
 export interface UsuarioListResponse {
   id: number;
   nombre: string;
-  acjMail: string;
+  email: string;
   ruc?: string;
   activo: boolean;
   rol: 'SUPERADMIN' | 'ADMIN' | 'USER';
@@ -15,7 +15,7 @@ export interface UsuarioListResponse {
 // Request DTO for PUT /api/usuarios/{id}
 export interface UsuarioUpdateRequest {
   nombre: string;
-  acjMail: string;
+  email: string;
   empresaRuc?: string;
   password?: string;  // Optional - only update if provided
   rol: 'SUPERADMIN' | 'ADMIN' | 'USER';

@@ -233,7 +233,7 @@ export class EditUserDialogComponent implements OnInit {
     // Pre-fill form with existing user data
     const user = this.data.user;
     this.nombre = user.nombre;
-    this.email = user.acjMail;
+    this.email = user.email;
     this.ruc = user.ruc || '';
     this.rol = user.rol;
   }
@@ -272,7 +272,7 @@ export class EditUserDialogComponent implements OnInit {
 
     const updateData: UsuarioUpdateRequest = {
       nombre: this.nombre,
-      acjMail: this.email,
+      email: this.email,
       ...(this.ruc && { empresaRuc: this.ruc }),
       rol: this.rol,
       ...(this.password && { password: this.password })

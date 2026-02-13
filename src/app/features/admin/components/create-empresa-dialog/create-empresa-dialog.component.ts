@@ -82,7 +82,7 @@ import { UsuarioListResponse } from '../../models/user.model';
           <mat-select [(ngModel)]="idUsuarioEncargado" name="idUsuarioEncargado">
             <mat-option [value]="null">Sin asignar</mat-option>
             @for (user of availableUsers; track user.id) {
-              <mat-option [value]="user.id">{{ user.nombre }} ({{ user.acjMail }})</mat-option>
+              <mat-option [value]="user.id">{{ user.nombre }} ({{ user.email }})</mat-option>
             }
           </mat-select>
           <mat-icon matPrefix>person</mat-icon>
