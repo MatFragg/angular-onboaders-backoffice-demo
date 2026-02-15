@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { OnboarderCompleto, formatLiveness, isLivenessPositive, formatEstado, normalizeScore } from '../../../models/onboarder.model';
 import { OnboardersService } from '../../../services/onboarders.service';
-import { environment } from '../../../../../../environments/environment.local';
+import { environment } from '../../../../../../environments/environment';
 import mapboxgl from 'mapbox-gl';
 
 /**

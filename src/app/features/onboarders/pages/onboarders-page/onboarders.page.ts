@@ -1,11 +1,19 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
 
 import { OnboardersService } from '../../services/onboarders.service';
 import { Cabecera, EstadoCabecera, PageResponse } from '../../models/onboarder.model';
 import { OnboardersTableComponent } from '../../components/onboarders-table/onboarders-table.component';
 import { DetailDialogComponent } from '../../components/ui/detail-dialog/detail-dialog.component';
+import { AuthService } from '../../../../core/services/auth.service';
+import { EmpresasService } from '../../../admin/services/empresas.service';
+import { EmpresaResponse } from '../../../admin/models/empresa.model';
 
 /**
  * OnboardersPage
@@ -16,7 +24,12 @@ import { DetailDialogComponent } from '../../components/ui/detail-dialog/detail-
   selector: 'app-onboarders-page',
   standalone: true,
   imports: [
+    CommonModule,
+    FormsModule,
     MatDialogModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule,
     OnboardersTableComponent
 ],
   templateUrl: './onboarders.page.html',
@@ -24,6 +37,8 @@ import { DetailDialogComponent } from '../../components/ui/detail-dialog/detail-
 })
 export class OnboardersPage implements OnInit {
   private onboardersService = inject(OnboardersService);
+  private authService = inject(AuthService);
+  private empresasService = inject(EmpresasService);
   private dialog = inject(MatDialog);
 
   // State
@@ -37,9 +52,27 @@ export class OnboardersPage implements OnInit {
   
   // Filter
   filterEstado: EstadoCabecera | undefined = undefined;
+  filterEmpresaId: number | undefined = undefined;
+  
+  // SuperAdmin specialized
+  isSuperAdmin = false;
+  empresas: EmpresaResponse[] = [];
 
   ngOnInit(): void {
+    this.isSuperAdmin = this.authService.hasRole('SUPERADMIN');
+    
+    if (this.isSuperAdmin) {
+      this.loadEmpresas();
+    }
+    
     this.loadCabeceras();
+  }
+  
+  loadEmpresas(): void {
+    this.empresasService.getEmpresas('', 0, 100).subscribe({
+      next: (page: any) => this.empresas = page.content,
+      error: (err: any) => console.error('Error loading companies for filter', err)
+    });
   }
 
   loadCabeceras(): void {
@@ -48,7 +81,8 @@ export class OnboardersPage implements OnInit {
     this.onboardersService.getCabeceras(
       this.pageNumber, 
       this.pageSize,
-      this.filterEstado
+      this.filterEstado,
+      this.filterEmpresaId
     ).subscribe({
       next: (response: PageResponse<Cabecera>) => {
         this.cabeceras.set(response.content);
@@ -60,6 +94,12 @@ export class OnboardersPage implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+  
+  onEmpresaFilterChange(empresaId: number | undefined): void {
+      this.filterEmpresaId = empresaId;
+      this.pageNumber = 0;
+      this.loadCabeceras();
   }
 
   onFilter(value: EstadoCabecera | undefined): void {

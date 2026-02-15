@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { SidebarComponent, NavItem } from '../shared/components/sidebar/sidebar.component';
@@ -14,11 +14,29 @@ import { AuthService } from '../core/services/auth.service';
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss']
 })
-export class LayoutComponent {
+export class LayoutComponent implements OnInit {
   private authService = inject(AuthService);
   
   brandTitle = 'ACJ ENROLLMENT';
   
+  // Expose current user signal
+  currentUser = this.authService.currentUser;
+  
+  userRole = computed(() => {
+    const roles = this.authService.userRoles();
+    return roles.length > 0 ? roles[0] : '';
+  });
+
+  ngOnInit() {
+    console.log('=== User Logged In Info ===');
+    console.log('User:', this.currentUser());
+    console.log('Roles:', this.authService.getRolesFromToken());
+    console.log('Token Payload:', this.authService.getTokenPayload());
+    console.log('Extracted RUC:', this.authService.getUserRuc());
+    console.log('Extracted Name:', this.authService.getUserName());
+    console.log('===========================');
+  }
+
   // Computed nav items based on user role
   navItems = computed(() => {
     // Defines nav items with their required roles

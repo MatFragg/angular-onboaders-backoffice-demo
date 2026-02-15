@@ -23,14 +23,19 @@ export class OnboardersService {
    * @param page page number (0-indexed for Spring)
    * @param size page size
    * @param estado optional estado filter (PENDIENTE, APROBADO, RECHAZADO)
+   * @param empresaId optional company filter
    */
-  getCabeceras(page: number = 0, size: number = 20, estado?: EstadoCabecera): Observable<PageResponse<Cabecera>> {
+  getCabeceras(page: number = 0, size: number = 20, estado?: EstadoCabecera, empresaId?: number): Observable<PageResponse<Cabecera>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
     
     if (estado) {
       params = params.set('estado', estado);
+    }
+
+    if (empresaId) {
+      params = params.set('empresaId', empresaId.toString());
     }
 
     console.log('[OnboardersService] getCabeceras params:', { page, size, estado });

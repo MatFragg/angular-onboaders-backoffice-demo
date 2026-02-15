@@ -1,5 +1,21 @@
 <div class="onboarders-page">
-  <h1 class="page-title">Onboarders</h1>
+  <div class="header-row">
+    <h1 class="page-title">Onboarders</h1>
+    
+    @if (isSuperAdmin) {
+      <mat-form-field appearance="outline" class="company-filter">
+        <mat-label>Filtrar por Empresa</mat-label>
+        <mat-select [ngModel]="filterEmpresaId" (selectionChange)="onEmpresaFilterChange($event.value)">
+          <mat-option [value]="undefined">Todas</mat-option>
+          @for (empresa of empresas; track empresa.id) {
+            <mat-option [value]="empresa.id">
+                {{ empresa.nombre }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+  </div>
 
   <app-onboarders-table
     [dataSource]="cabeceras()"

@@ -76,7 +76,7 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
 
               <ng-container matColumnDef="acjMail">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
-                <td mat-cell *matCellDef="let user">{{ user.acjMail }}</td>
+                <td mat-cell *matCellDef="let user">{{ user.email }}</td>
               </ng-container>
 
               <ng-container matColumnDef="rol">

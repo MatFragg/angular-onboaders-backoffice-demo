@@ -13,6 +13,17 @@
   </nav>
 
   <div class="sidebar-footer">
+    @if (currentUser) {
+      <div class="user-profile">
+        <div class="user-avatar">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <div class="user-details">
+          <span class="user-name">{{ currentUser.nombre || currentUser.email }}</span>
+          <span class="user-role">{{ userRole }}</span>
+        </div>
+      </div>
+    }
     <button class="nav-item logout-btn" (click)="logoutClicked.emit()">
       <mat-icon>logout</mat-icon>
       <span>Cerrar Sesión</span>

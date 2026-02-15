@@ -50,7 +50,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Empresa (RUC)</mat-label>
-        <mat-select [(ngModel)]="empresaRuc" name="empresaRuc">
+        <mat-select [(ngModel)]="empresaRuc" name="empresaRuc" [disabled]="isEmpresaLocked">
           <mat-option [value]="''">Ninguna</mat-option>
           @for (empresa of availableEmpresas; track empresa.ruc) {
             <mat-option [value]="empresa.ruc">
@@ -95,10 +95,10 @@
     <div class="role-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Tipo de usuario</mat-label>
-        <mat-select [(ngModel)]="tipoUsuario" name="tipoUsuario" required>
-          <mat-option value="SUPERADMIN">Super Admin</mat-option>
-          <mat-option value="ADMIN">Administrador</mat-option>
-          <mat-option value="USER">Usuario</mat-option>
+        <mat-select [(ngModel)]="tipoUsuario" name="tipoUsuario" required [disabled]="isRoleLocked">
+          @for (role of availableRoles; track role.value) {
+            <mat-option [value]="role.value">{{ role.label }}</mat-option>
+          }
         </mat-select>
         <mat-icon matPrefix>badge</mat-icon>
       </mat-form-field>

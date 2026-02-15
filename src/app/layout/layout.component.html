@@ -3,6 +3,8 @@
   <app-sidebar 
     [brandTitle]="brandTitle" 
     [navItems]="navItems()"
+    [currentUser]="currentUser()"
+    [userRole]="userRole()"
     (logoutClicked)="onLogout()">
   </app-sidebar>
 

@@ -130,15 +130,33 @@ export class AuthService {
    * Extract roles from JWT token
    */
   getRolesFromToken(): string[] {
+    const payload = this.getTokenPayload();
+    return payload?.roles || [];
+  }
+
+  /**
+   * Get full token payload
+   */
+  getTokenPayload(): any {
     const token = this.getToken();
-    if (!token) return [];
+    if (!token) return null;
     
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.roles || [];
+      return JSON.parse(atob(token.split('.')[1]));
     } catch {
-      return [];
+      return null;
     }
+  }
+
+  getUserRuc(): string | undefined {
+    const payload = this.getTokenPayload();
+    return payload?.ruc || payload?.empresaRuc || undefined;
+  }
+
+  getUserName(): string | undefined {
+    const payload = this.getTokenPayload();
+    // Prioritize explicit name claim, fallback to stored user name
+    return payload?.nombre || payload?.name || this.currentUser()?.nombre || undefined;
   }
 
   /**

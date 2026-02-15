@@ -10,9 +10,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { UsersService } from '../../services/users.service';
-import { UsuarioListResponse, UsuarioUpdateRequest } from '../../models/user.model';
+import { UsuarioListResponse, UsuarioUpdateRequest, UserRole } from '../../models/user.model';
 import { EmpresasService } from '../../services/empresas.service';
 import { EmpresaResponse } from '../../models/empresa.model';
+import { AuthService } from '../../../../core/services/auth.service';
 
 export interface EditUserDialogData {
   user: UsuarioListResponse;
@@ -71,7 +72,7 @@ export interface EditUserDialogData {
         <div class="role-row">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Empresa (RUC)</mat-label>
-            <mat-select [(ngModel)]="ruc" name="ruc">
+            <mat-select [(ngModel)]="ruc" name="ruc" [disabled]="isEmpresaLocked">
               <mat-option [value]="''">Ninguna</mat-option>
               @for (empresa of availableEmpresas; track empresa.ruc) {
                 <mat-option [value]="empresa.ruc">
@@ -99,10 +100,10 @@ export interface EditUserDialogData {
         <div class="role-row">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Rol</mat-label>
-            <mat-select [(ngModel)]="rol" name="rol" required>
-              <mat-option value="SUPERADMIN">Super Admin</mat-option>
-              <mat-option value="ADMIN">Administrador</mat-option>
-              <mat-option value="USER">Usuario</mat-option>
+            <mat-select [(ngModel)]="rol" name="rol" required [disabled]="isRoleLocked">
+              @for (roleItem of availableRoles; track roleItem.value) {
+                <mat-option [value]="roleItem.value">{{ roleItem.label }}</mat-option>
+              }
             </mat-select>
             <mat-icon matPrefix>badge</mat-icon>
           </mat-form-field>
@@ -220,17 +221,18 @@ export interface EditUserDialogData {
   `]
 })
 export class EditUserDialogComponent implements OnInit {
+  private authService = inject(AuthService);
   private usersService = inject(UsersService);
   private empresasService = inject(EmpresasService);
   private dialogRef = inject(MatDialogRef<EditUserDialogComponent>);
-  private data: EditUserDialogData = inject(MAT_DIALOG_DATA);
+  public data: EditUserDialogData = inject(MAT_DIALOG_DATA);
 
   // Form fields
   nombre = '';
   email = '';
-  ruc = '';
+  ruc: string | number = '';
   password = '';
-  rol: 'SUPERADMIN' | 'ADMIN' | 'USER' = 'USER';
+  rol: any = 'USER';
   
   hidePassword = true;
   isLoading = false;
@@ -238,11 +240,54 @@ export class EditUserDialogComponent implements OnInit {
   successMessage = '';
   
   availableEmpresas: EmpresaResponse[] = [];
+  
+  // Permission flags
+  isEmpresaLocked = false;
+  isRoleLocked = false;
+  availableRoles: any[] = [];
 
   ngOnInit(): void {
+    const isSuperAdmin = this.authService.hasRole('SUPERADMIN');
+    const isAdmin = this.authService.hasRole('ADMIN');
+
+    // Role configuration
+    if (isSuperAdmin) {
+      this.availableRoles = [
+        { value: 'SUPERADMIN', label: 'Super Admin' },
+        { value: 'ADMIN', label: 'Administrador' },
+        { value: 'USER', label: 'Usuario' }
+      ];
+      this.isRoleLocked = false;
+    } else if (isAdmin) {
+      // Admin can only create User
+      this.availableRoles = [
+        { value: 'USER', label: 'Usuario' }
+      ];
+      this.isRoleLocked = true;
+
+      // Pre-fill and lock company for Admin users
+      const ruc = this.authService.getUserRuc();
+      if (ruc) {
+        this.ruc = ruc;
+        this.isEmpresaLocked = true;
+      }
+    } else {
+       this.availableRoles = [{ value: 'USER', label: 'Usuario' }];
+       this.isRoleLocked = true;
+    }
+
     // Load companies
     this.empresasService.getEmpresas('', 0, 100).subscribe({
-      next: (page) => this.availableEmpresas = page.content,
+      next: (page) => {
+        this.availableEmpresas = page.content;
+
+        if (this.isEmpresaLocked && this.ruc) {
+             const found = this.availableEmpresas.find(e => String(e.ruc) === String(this.ruc));
+             if (found) {
+                 this.ruc = found.ruc;
+             }
+        }
+      },
       error: (err) => console.error('Error loading companies:', err)
     });
 
@@ -250,7 +295,12 @@ export class EditUserDialogComponent implements OnInit {
     const user = this.data.user;
     this.nombre = user.nombre;
     this.email = user.email;
-    this.ruc = user.ruc || '';
+    if (!this.isEmpresaLocked) {
+        this.ruc = user.empresaId ? String(user.empresaRuc || '') : '';
+        // If we have empresaId but not RUC, we might need to find it from list later, 
+        // but assuming list has enough info or user object has it.
+        // The list model has 'ruc'.
+    }
     this.rol = user.rol;
   }
 
@@ -268,7 +318,7 @@ export class EditUserDialogComponent implements OnInit {
       return;
     }
 
-    if (this.ruc && this.ruc.length !== 11) {
+    if (this.ruc && String(this.ruc).length !== 11) {
       this.errorMessage = 'El RUC debe tener 11 caracteres';
       return;
     }
@@ -289,7 +339,7 @@ export class EditUserDialogComponent implements OnInit {
     const updateData: UsuarioUpdateRequest = {
       nombre: this.nombre,
       email: this.email,
-      ...(this.ruc && { empresaRuc: this.ruc }),
+      ...(this.ruc && { empresaRuc: String(this.ruc) }),
       rol: this.rol,
       ...(this.password && { password: this.password })
     };

@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { CurrentUser } from '../../../core/models/auth.model';
 
 export interface NavItem {
   label: string;
@@ -27,5 +28,7 @@ export interface NavItem {
 export class SidebarComponent {
   @Input() brandTitle = 'ACJ ENROLLMENT';
   @Input() navItems: NavItem[] = [];
+  @Input() currentUser: CurrentUser | null = null;
+  @Input() userRole: string = '';
   @Output() logoutClicked = new EventEmitter<void>();
 }

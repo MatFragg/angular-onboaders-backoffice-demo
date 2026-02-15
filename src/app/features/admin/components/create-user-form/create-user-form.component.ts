@@ -40,7 +40,7 @@ export class CreateUserDialogComponent implements OnInit {
   email = '';
   password = '';
   dni='';
-  empresaRuc='';
+  empresaRuc: string | number = '';
   confirmPassword = '';
   tipoUsuario: TipoUsuario = 'USER';
   
@@ -51,12 +51,68 @@ export class CreateUserDialogComponent implements OnInit {
   successMessage = '';
   
   availableEmpresas: EmpresaResponse[] = [];
+  isEmpresaLocked = false;
+  isRoleLocked = false;
+  availableRoles: { value: TipoUsuario, label: string }[] = [];
 
   ngOnInit(): void {
+    const isSuperAdmin = this.authService.hasRole('SUPERADMIN');
+    const isAdmin = this.authService.hasRole('ADMIN');
+
+    // Role configuration
+    if (isSuperAdmin) {
+      // SuperAdmin can create Admin and User (removed SuperAdmin creation for now)
+      this.availableRoles = [
+        { value: 'ADMIN', label: 'Administrador' },
+        { value: 'USER', label: 'Usuario' }
+      ];
+      this.isRoleLocked = false;
+    } else if (isAdmin) {
+      // Admin can only create User
+      this.availableRoles = [
+        { value: 'USER', label: 'Usuario' }
+      ];
+      this.tipoUsuario = 'USER';
+      this.isRoleLocked = true;
+
+      // Pre-fill and lock company for Admin users
+      const ruc = this.authService.getUserRuc();
+      if (ruc) {
+        // Ensure RUC matches the type in the dropdown (number vs string)
+        // If the dropdown options use numbers (from backend Long), we need to match it.
+        // Assuming backend sends numbers in JSON regardless of TS interface saying string.
+        this.empresaRuc = ruc; 
+        
+        // If ruc is a string but options are numbers, or vice-versa, we might need conversion.
+        // But since we don't know for sure if backend returns number in JSON (it does if it's Long),
+        // let's try to handle potential type mismatch by checking later or casting.
+        // Actually, let's just use loose equality or handle it in the template.
+        // But better: Parse it as number if it looks like one.
+        // However, getUserRuc returns string.
+        // Let's try to convert to number if we can, or just leave it if it works as string.
+        
+        // BETTER APPROACH: Match whatever is in availableEmpresas once loaded.
+        this.isEmpresaLocked = true;
+      }
+    } else {
+       // Fallback for just USER role (should not happen in this dialog usually)
+       this.availableRoles = [{ value: 'USER', label: 'Usuario' }];
+       this.tipoUsuario = 'USER';
+       this.isRoleLocked = true; 
+    }
+
     // Load companies for dropdown
     this.empresasService.getEmpresas('', 0, 100).subscribe({
       next: (page) => {
         this.availableEmpresas = page.content;
+
+        // Ensure selection matches type
+        if (this.isEmpresaLocked && this.empresaRuc) {
+          const found = this.availableEmpresas.find(e => String(e.ruc) === String(this.empresaRuc));
+          if (found) {
+            this.empresaRuc = found.ruc;
+          }
+        }
       },
       error: (err) => console.error('Error loading companies:', err)
     });
@@ -86,7 +142,7 @@ export class CreateUserDialogComponent implements OnInit {
       return;
     }
 
-    if (this.empresaRuc && this.empresaRuc.length !== 11) {
+    if (this.empresaRuc && String(this.empresaRuc).length !== 11) {
       this.errorMessage = 'El RUC debe tener 11 caracteres';
       return;
     }

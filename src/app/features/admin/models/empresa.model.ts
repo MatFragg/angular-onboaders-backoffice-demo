@@ -2,8 +2,10 @@
  * Empresa Models for Admin Module
  */
 
+
 // Response DTO from GET /api/empresas
 export interface EmpresaResponse {
+  id?: number; // Added for filtering, backend provides it but maybe was missing in TS
   ruc: string;
   nombre: string;
   email: string;

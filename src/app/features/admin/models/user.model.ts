@@ -2,14 +2,20 @@
  * User Models for Admin Module
  */
 
+
+export type UserRole = 'SUPERADMIN' | 'ADMIN' | 'USER';
+
 // Response DTO from GET /api/usuarios
 export interface UsuarioListResponse {
   id: number;
   nombre: string;
   email: string;
-  ruc?: string;
+  dni?: string;
+  empresaRuc?: string | number;
+  empresaId?: number;
+  empresaNombre?: string;
   activo: boolean;
-  rol: 'SUPERADMIN' | 'ADMIN' | 'USER';
+  rol: UserRole;
 }
 
 // Request DTO for PUT /api/usuarios/{id}
@@ -17,7 +23,7 @@ export interface UsuarioUpdateRequest {
   nombre: string;
   email: string;
   empresaRuc?: string;
-  password?: string;  // Optional - only update if provided
-  rol: 'SUPERADMIN' | 'ADMIN' | 'USER';
+  password?: string;
+  rol: UserRole;
 }
 
