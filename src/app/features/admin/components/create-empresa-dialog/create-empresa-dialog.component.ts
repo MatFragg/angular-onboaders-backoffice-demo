@@ -8,10 +8,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { EmpresasService } from '../../services/empresas.service';
 import { UsersService } from '../../services/users.service';
 import { UsuarioListResponse } from '../../models/user.model';
+import { RucService } from '../../../../shared/services/ruc.service';
 
 @Component({
   selector: 'app-create-empresa-dialog',
@@ -25,6 +27,7 @@ import { UsuarioListResponse } from '../../models/user.model';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatTooltipModule
   ],
   template: `
     <h2 mat-dialog-title>
@@ -53,6 +56,13 @@ import { UsuarioListResponse } from '../../models/user.model';
             required
             maxlength="11">
           <mat-icon matPrefix>pin</mat-icon>
+          @if (isRucLoading) {
+            <mat-spinner matSuffix diameter="18"></mat-spinner>
+          } @else {
+            <button mat-icon-button matSuffix (click)="searchRuc()" type="button" matTooltip="Buscar RUC">
+              <mat-icon>search</mat-icon>
+            </button>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
@@ -65,6 +75,7 @@ import { UsuarioListResponse } from '../../models/user.model';
             required>
           <mat-icon matPrefix>business</mat-icon>
         </mat-form-field>
+
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email corporativo</mat-label>
@@ -188,6 +199,7 @@ import { UsuarioListResponse } from '../../models/user.model';
 export class CreateEmpresaDialogComponent implements OnInit {
   private empresasService = inject(EmpresasService);
   private usersService = inject(UsersService);
+  private rucService = inject(RucService);
   private dialogRef = inject(MatDialogRef<CreateEmpresaDialogComponent>);
 
   ruc = '';
@@ -197,6 +209,7 @@ export class CreateEmpresaDialogComponent implements OnInit {
 
   availableUsers: UsuarioListResponse[] = [];
   isLoading = false;
+  isRucLoading = false;
   errorMessage = '';
   successMessage = '';
 
@@ -205,6 +218,31 @@ export class CreateEmpresaDialogComponent implements OnInit {
       next: (users) => this.availableUsers = users.filter(u => u.activo),
       error: (err) => console.error('Error loading users:', err),
     });
+  }
+
+  searchRuc(): void {
+    if (this.ruc && this.ruc.length === 11) {
+      this.isRucLoading = true;
+      this.errorMessage = '';
+      this.rucService.consultarRuc(this.ruc).subscribe({
+        next: (nombre) => {
+          this.isRucLoading = false;
+          if (nombre) {
+            this.nombre = nombre;
+            this.errorMessage = '';
+          } else {
+             this.errorMessage = 'No se encontró información para el RUC ingresado.';
+          }
+        },
+        error: (err) => {
+          this.isRucLoading = false;
+          console.error('Error fetching RUC:', err);
+          this.errorMessage = 'Error al consultar el RUC. Por favor intente manualmente.';
+        }
+      });
+    } else {
+      this.errorMessage = 'El RUC debe tener 11 dígitos.';
+    }
   }
 
   onSubmit(): void {

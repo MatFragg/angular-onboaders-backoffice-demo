@@ -10,7 +10,7 @@ export interface UsuarioListResponse {
   id: number;
   nombre: string;
   email: string;
-  dni?: string;
+  ruc?: string;
   empresaRuc?: string | number;
   empresaId?: number;
   empresaNombre?: string;
@@ -22,6 +22,7 @@ export interface UsuarioListResponse {
 export interface UsuarioUpdateRequest {
   nombre: string;
   email: string;
+  ruc?: string;
   empresaRuc?: string;
   password?: string;
   rol: UserRole;

@@ -10,9 +10,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AuthService } from '../../../../core/services/auth.service';
-import { TipoUsuario } from '../../../../core/models/auth.model';
+import { TipoUsuario, RegisterRequest } from '../../../../core/models/auth.model';
 import { EmpresasService } from '../../services/empresas.service';
 import { EmpresaResponse } from '../../models/empresa.model';
+import { RucService } from '../../../../shared/services/ruc.service';
 
 @Component({
   selector: 'app-create-user-dialog',
@@ -33,13 +34,14 @@ import { EmpresaResponse } from '../../models/empresa.model';
 export class CreateUserDialogComponent implements OnInit {
   private authService = inject(AuthService);
   private empresasService = inject(EmpresasService);
+  private rucService = inject(RucService);
   private dialogRef = inject(MatDialogRef<CreateUserDialogComponent>);
 
   // Form fields
   nombre = '';
   email = '';
   password = '';
-  dni='';
+  ruc = '';
   empresaRuc: string | number = '';
   confirmPassword = '';
   tipoUsuario: TipoUsuario = 'USER';
@@ -47,6 +49,7 @@ export class CreateUserDialogComponent implements OnInit {
   hidePassword = true;
   hideConfirmPassword = true;
   isLoading = false;
+  isRucLoading = false;
   errorMessage = '';
   successMessage = '';
   
@@ -118,6 +121,18 @@ export class CreateUserDialogComponent implements OnInit {
     });
   }
 
+  onRucChange(): void {
+    if (this.ruc && this.ruc.length === 11) {
+      this.isRucLoading = true;
+      this.rucService.consultarRuc(this.ruc).subscribe((nombre) => {
+        this.isRucLoading = false;
+        if (nombre) {
+          this.nombre = nombre;
+        }
+      });
+    }
+  }
+
   onSubmit(): void {
     // Validations
     if (!this.nombre || !this.email || !this.password || !this.confirmPassword) {
@@ -137,13 +152,13 @@ export class CreateUserDialogComponent implements OnInit {
       return;
     }
 
-    if (this.dni.length !== 8) {
-      this.errorMessage = 'El DNI debe tener 8 caracteres';
+    if (this.ruc.length !== 11) {
+      this.errorMessage = 'El RUC debe tener 11 caracteres';
       return;
     }
 
     if (this.empresaRuc && String(this.empresaRuc).length !== 11) {
-      this.errorMessage = 'El RUC debe tener 11 caracteres';
+      this.errorMessage = 'El RUC de empresa debe tener 11 caracteres';
       return;
     }
 
@@ -160,10 +175,11 @@ export class CreateUserDialogComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    const registerData = {
+    const registerData: RegisterRequest = {
       nombre: this.nombre,
       email: this.email,
-      dni: this.dni,
+      ruc: this.ruc,
+      // @ts-ignore
       ...(this.empresaRuc && { empresaRuc: this.empresaRuc }),
       password: this.password,
       activo: true,

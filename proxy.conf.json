@@ -1,0 +1,8 @@
+{
+  "/api/v1/consultas": {
+    "target": "https://ruc.com.pe",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

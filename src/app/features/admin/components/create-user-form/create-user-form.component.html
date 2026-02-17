@@ -38,14 +38,19 @@
 
     <div class="password-row">
       <mat-form-field appearance="outline" >
-        <mat-label>DNI</mat-label>
+        <mat-label>RUC</mat-label>
         <input matInput 
           type="text" 
-          [(ngModel)]="dni" 
-          name="dni"
-          placeholder="12345678"
-          required>
+          [(ngModel)]="ruc" 
+          name="ruc"
+          placeholder="20123456789"
+          required
+          maxlength="11"
+          (blur)="onRucChange()">
         <mat-icon matPrefix>badge</mat-icon>
+        @if (isRucLoading) {
+            <mat-spinner matSuffix diameter="18"></mat-spinner>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline">

@@ -96,6 +96,18 @@ import { TipoUsuario } from '../../../../core/models/auth.model';
               <mat-icon matPrefix>badge</mat-icon>
             </mat-form-field>
 
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>RUC</mat-label>
+              <input matInput 
+                type="text" 
+                [(ngModel)]="ruc" 
+                name="ruc"
+                placeholder="20123456789"
+                required
+                maxlength="11">
+              <mat-icon matPrefix>pin</mat-icon>
+            </mat-form-field>
+
             @if (errorMessage) {
               <div class="error-message">
                 <mat-icon>error</mat-icon>
@@ -210,7 +222,7 @@ export class RegisterPage {
   // Form fields
   nombre = '';
   email = '';
-  dni='';
+  ruc = '';
   password = '';
   confirmPassword = '';
   tipoUsuario: TipoUsuario = 'USER';
@@ -223,7 +235,7 @@ export class RegisterPage {
 
   onSubmit(): void {
     // Validations
-    if (!this.nombre || !this.email || !this.password || !this.confirmPassword) {
+    if (!this.nombre || !this.email || !this.password || !this.confirmPassword || !this.ruc) {
       this.errorMessage = 'Por favor completa todos los campos';
       return;
     }
@@ -238,6 +250,11 @@ export class RegisterPage {
       return;
     }
 
+    if (this.ruc.length !== 11) {
+      this.errorMessage = 'El RUC debe tener 11 caracteres';
+      return;
+    }
+
     this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
@@ -245,7 +262,7 @@ export class RegisterPage {
     const registerData = {
       nombre: this.nombre,
       email: this.email,
-      dni: this.dni,
+      ruc: this.ruc,
       password: this.password,
       activo: true,
       tipoUsuario: this.tipoUsuario
