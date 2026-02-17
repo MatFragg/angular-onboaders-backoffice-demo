@@ -14,6 +14,7 @@ import { TipoUsuario, RegisterRequest } from '../../../../core/models/auth.model
 import { EmpresasService } from '../../services/empresas.service';
 import { EmpresaResponse } from '../../models/empresa.model';
 import { RucService } from '../../../../shared/services/ruc.service';
+import { DniService } from '../../../../shared/services/dni.service';
 
 @Component({
   selector: 'app-create-user-dialog',
@@ -35,12 +36,14 @@ export class CreateUserDialogComponent implements OnInit {
   private authService = inject(AuthService);
   private empresasService = inject(EmpresasService);
   private rucService = inject(RucService);
+  private dniService = inject(DniService);
   private dialogRef = inject(MatDialogRef<CreateUserDialogComponent>);
 
   // Form fields
   nombre = '';
   email = '';
   password = '';
+  dni = '';
   ruc = '';
   empresaRuc: string | number = '';
   confirmPassword = '';
@@ -53,10 +56,13 @@ export class CreateUserDialogComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
   
-  availableEmpresas: EmpresaResponse[] = [];
   isEmpresaLocked = false;
   isRoleLocked = false;
   availableRoles: { value: TipoUsuario, label: string }[] = [];
+  
+  // Company search
+  empresaNombre = '';
+  isEmpresaLoading = false;
 
   ngOnInit(): void {
     const isSuperAdmin = this.authService.hasRole('SUPERADMIN');
@@ -104,30 +110,66 @@ export class CreateUserDialogComponent implements OnInit {
        this.isRoleLocked = true; 
     }
 
-    // Load companies for dropdown
-    this.empresasService.getEmpresas('', 0, 100).subscribe({
-      next: (page) => {
-        this.availableEmpresas = page.content;
-
-        // Ensure selection matches type
-        if (this.isEmpresaLocked && this.empresaRuc) {
-          const found = this.availableEmpresas.find(e => String(e.ruc) === String(this.empresaRuc));
-          if (found) {
-            this.empresaRuc = found.ruc;
-          }
-        }
-      },
-      error: (err) => console.error('Error loading companies:', err)
-    });
+    if (this.isEmpresaLocked && this.empresaRuc) {
+       this.loadLockedEmpresaName();
+    }
   }
 
-  onRucChange(): void {
-    if (this.ruc && this.ruc.length === 11) {
-      this.isRucLoading = true;
-      this.rucService.consultarRuc(this.ruc).subscribe((nombre) => {
+  // Removed getEmpresas call since we now search by RUC manually for company
+  // Note: If isEmpresaLocked is true (Admin), we might want to fetch the name.
+  // But Admin already has their company ID/RUC. We can fetch name if needed, 
+  // or just rely on them knowing it. For 'create user', they are creating for their company.
+  // Ideally we should fetch the name if locked.
+  loadLockedEmpresaName(): void {
+     if (this.isEmpresaLocked && this.empresaRuc) {
+        this.isEmpresaLoading = true;
+        this.rucService.consultarRuc(String(this.empresaRuc)).subscribe(nombre => {
+           this.isEmpresaLoading = false;
+           if (nombre) this.empresaNombre = nombre;
+        });
+     }
+  }
+
+  searchDocumento(): void {
+    if (this.dni) {
+      if (this.dni.length === 8) {
+        this.isRucLoading = true;
+        this.dniService.consultarDniOnboarderBackend(this.dni).subscribe({
+          next: (nombre) => {
+            this.isRucLoading = false;
+            if (nombre) {
+              this.nombre = nombre;
+            }
+          },
+          error: (err) => {
+             this.isRucLoading = false;
+             console.error('Error fetching DNI:', err);
+          }
+        });
+      } else {
         this.isRucLoading = false;
-        if (nombre) {
-          this.nombre = nombre;
+        this.errorMessage = 'El DNI debe tener 8 dígitos.';
+      }
+    }
+  }
+
+  searchEmpresa(): void {
+    if (this.empresaRuc && String(this.empresaRuc).length === 11) {
+      this.isEmpresaLoading = true;
+      this.rucService.consultarRuc(String(this.empresaRuc)).subscribe({
+        next: (nombre) => {
+          this.isEmpresaLoading = false;
+          if (nombre) {
+            this.empresaNombre = nombre;
+          } else {
+             // Optional: Show simplified error or just clear name
+             this.empresaNombre = '';
+             this.errorMessage = 'No se encontró la empresa.';
+          }
+        },
+        error: (err) => {
+          this.isEmpresaLoading = false;
+          console.error('Error fetching Company RUC:', err);
         }
       });
     }
@@ -152,8 +194,13 @@ export class CreateUserDialogComponent implements OnInit {
       return;
     }
 
-    if (this.ruc.length !== 11) {
-      this.errorMessage = 'El RUC debe tener 11 caracteres';
+    if(this.dni && this.dni.length !== 8){
+      this.errorMessage = 'El DNI debe tener 8 dígitos';
+      return;
+    }
+    
+    if (this.ruc && this.ruc.length !== 11) {
+      this.errorMessage = 'El RUC debe tener 11 dígitos';
       return;
     }
 
@@ -178,6 +225,7 @@ export class CreateUserDialogComponent implements OnInit {
     const registerData: RegisterRequest = {
       nombre: this.nombre,
       email: this.email,
+      dni: this.dni,
       ruc: this.ruc,
       // @ts-ignore
       ...(this.empresaRuc && { empresaRuc: this.empresaRuc }),
@@ -199,6 +247,10 @@ export class CreateUserDialogComponent implements OnInit {
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err.error?.message || 'Error al crear usuario';
+        // Check if error message is an object and try to extract string
+        if (typeof this.errorMessage === 'object') {
+           this.errorMessage = JSON.stringify(this.errorMessage);
+        }
       }
     });
   }
@@ -211,9 +263,12 @@ export class CreateUserDialogComponent implements OnInit {
     this.nombre = '';
     this.email = '';
     this.empresaRuc = '';
+    this.empresaNombre = '';
     this.password = '';
     this.confirmPassword = '';
     this.tipoUsuario = 'USER';
+    this.dni = ''; 
+    this.ruc = '';
     this.successMessage = '';
     this.errorMessage = '';
   }

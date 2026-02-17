@@ -15,8 +15,8 @@ export const authInterceptor: HttpInterceptorFn = (
 
   console.log('[AuthInterceptor] Request:', req.url, '| Token:', token ? 'present' : 'missing');
 
-  // Skip auth header for login/register endpoints
-  if (req.url.includes('/auth/login') || req.url.includes('/auth/register')) {
+  // Skip auth header for login/register endpoints and external APIs
+  if (req.url.includes('/auth/login') || req.url.includes('/auth/register') || req.url.includes('apiperu.dev')) {
     console.log('[AuthInterceptor] Skipping auth for:', req.url);
     return next(req);
   }

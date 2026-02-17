@@ -15,6 +15,7 @@ export interface RegisterRequest {
   nombre: string;
   email: string;
   password: string;
+  dni: string;
   ruc: string;
   activo: boolean;
   tipoUsuario: TipoUsuario;

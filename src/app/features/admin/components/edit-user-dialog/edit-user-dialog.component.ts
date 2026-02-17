@@ -14,6 +14,9 @@ import { UsuarioListResponse, UsuarioUpdateRequest, UserRole } from '../../model
 import { EmpresasService } from '../../services/empresas.service';
 import { EmpresaResponse } from '../../models/empresa.model';
 import { AuthService } from '../../../../core/services/auth.service';
+import { RucService } from '../../../../shared/services/ruc.service';
+import { DniService } from '../../../../shared/services/dni.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 export interface EditUserDialogData {
   user: UsuarioListResponse;
@@ -30,7 +33,8 @@ export interface EditUserDialogData {
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTooltipModule
 ],
   template: `
     <h2 mat-dialog-title>
@@ -49,15 +53,64 @@ export interface EditUserDialogData {
 
     <mat-dialog-content>
       <form (ngSubmit)="onSubmit()" class="user-form" id="editUserForm">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Nombre completo</mat-label>
-          <input matInput 
-            type="text" 
-            [(ngModel)]="nombre" 
-            name="nombre"
-            required>
-          <mat-icon matPrefix>person</mat-icon>
-        </mat-form-field>
+        
+        <div class="role-row">
+          <mat-form-field appearance="outline">
+            <mat-label>DNI</mat-label>
+            <input matInput 
+              type="text" 
+              [(ngModel)]="dni" 
+              name="dni"
+              placeholder="DNI (8)"
+              maxlength="8"
+              required>
+            <mat-icon matPrefix>badge</mat-icon>
+            @if (isDocumentoLoading) {
+                <mat-spinner matSuffix diameter="18"></mat-spinner>
+            } @else {
+                <button mat-icon-button matSuffix (click)="searchDocumento()" type="button" matTooltip="Buscar Documento">
+                  <mat-icon>search</mat-icon>
+                </button>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Empresa (RUC)</mat-label>
+            <input matInput 
+               type="text" 
+               [(ngModel)]="empresaRuc" 
+               name="empresaRuc" 
+               [disabled]="isEmpresaLocked"
+               placeholder="12345678901"
+               maxlength="11">
+            <mat-icon matPrefix>business</mat-icon>
+            @if (isEmpresaLoading) {
+                <mat-spinner matSuffix diameter="18"></mat-spinner>
+            } @else {
+                <button mat-icon-button matSuffix (click)="searchEmpresa()" type="button" [disabled]="isEmpresaLocked" matTooltip="Buscar Empresa">
+                  <mat-icon>search</mat-icon>
+                </button>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="role-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre completo</mat-label>
+            <input matInput 
+              type="text" 
+              [(ngModel)]="nombre" 
+              name="nombre"
+              required>
+            <mat-icon matPrefix>person</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+             <mat-label>Razón Social Empresa</mat-label>
+             <input matInput [value]="empresaNombre" readonly>
+             <mat-icon matPrefix>domain</mat-icon>
+          </mat-form-field>
+        </div>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email corporativo</mat-label>
@@ -68,21 +121,6 @@ export interface EditUserDialogData {
             required>
           <mat-icon matPrefix>email</mat-icon>
         </mat-form-field>
-
-        <div class="role-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Empresa (RUC)</mat-label>
-            <mat-select [(ngModel)]="ruc" name="ruc" [disabled]="isEmpresaLocked">
-              <mat-option [value]="''">Ninguna</mat-option>
-              @for (empresa of availableEmpresas; track empresa.ruc) {
-                <mat-option [value]="empresa.ruc">
-                  {{ empresa.nombre }} ({{ empresa.ruc }})
-                </mat-option>
-              }
-            </mat-select>
-            <mat-icon matPrefix>business</mat-icon>
-          </mat-form-field>
-        </div>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Nueva contraseña (opcional)</mat-label>
@@ -224,22 +262,29 @@ export class EditUserDialogComponent implements OnInit {
   private authService = inject(AuthService);
   private usersService = inject(UsersService);
   private empresasService = inject(EmpresasService);
+  private rucService = inject(RucService);
+  private dniService = inject(DniService);
   private dialogRef = inject(MatDialogRef<EditUserDialogComponent>);
   public data: EditUserDialogData = inject(MAT_DIALOG_DATA);
 
   // Form fields
   nombre = '';
   email = '';
-  ruc: string | number = '';
+  dni = '';
+  ruc = '';
+  empresaRuc: string | number = '';
   password = '';
   rol: any = 'USER';
   
   hidePassword = true;
   isLoading = false;
+  isDocumentoLoading = false;
   errorMessage = '';
   successMessage = '';
   
-  availableEmpresas: EmpresaResponse[] = [];
+  // Company Search
+  empresaNombre = '';
+  isEmpresaLoading = false;
   
   // Permission flags
   isEmpresaLocked = false;
@@ -268,7 +313,7 @@ export class EditUserDialogComponent implements OnInit {
       // Pre-fill and lock company for Admin users
       const ruc = this.authService.getUserRuc();
       if (ruc) {
-        this.ruc = ruc;
+        this.empresaRuc = ruc;
         this.isEmpresaLocked = true;
       }
     } else {
@@ -276,32 +321,68 @@ export class EditUserDialogComponent implements OnInit {
        this.isRoleLocked = true;
     }
 
-    // Load companies
-    this.empresasService.getEmpresas('', 0, 100).subscribe({
-      next: (page) => {
-        this.availableEmpresas = page.content;
-
-        if (this.isEmpresaLocked && this.ruc) {
-             const found = this.availableEmpresas.find(e => String(e.ruc) === String(this.ruc));
-             if (found) {
-                 this.ruc = found.ruc;
-             }
-        }
-      },
-      error: (err) => console.error('Error loading companies:', err)
-    });
+    // We no longer load all companies. 
+    // If locked (Admin), we might want to ensure name is loaded if not already.
+    if (this.isEmpresaLocked && this.empresaRuc && !this.empresaNombre) {
+       this.searchEmpresa();
+    }
 
     // Pre-fill form with existing user data
     const user = this.data.user;
     this.nombre = user.nombre;
     this.email = user.email;
+    this.dni = user.dni || (user.ruc && user.ruc.length === 8 ? user.ruc : '');
+    this.ruc = (user.ruc && user.ruc.length === 11) ? user.ruc : '';
+    // If personal RUC was 11 digits, we might generally ignore it now for edit, or map it to ruc?
+    // User context seems to favor DNI.
     if (!this.isEmpresaLocked) {
-        this.ruc = user.empresaId ? String(user.empresaRuc || '') : '';
-        // If we have empresaId but not RUC, we might need to find it from list later, 
-        // but assuming list has enough info or user object has it.
-        // The list model has 'ruc'.
+        this.empresaRuc = user.empresaId ? String(user.empresaRuc || '') : '';
+        this.empresaNombre = user.empresaNombre || '';
     }
     this.rol = user.rol;
+  }
+
+
+
+  searchDocumento(): void {
+    if (this.dni && this.dni.length === 8) {
+        this.isDocumentoLoading = true;
+        this.dniService.consultarDni(this.dni).subscribe({
+          next: (nombre) => {
+            this.isDocumentoLoading = false;
+            if (nombre) {
+              this.nombre = nombre;
+            }
+          },
+          error: (err) => {
+             this.isDocumentoLoading = false;
+             console.error('Error fetching DNI:', err);
+          }
+        });
+    } else {
+        // Optional: show error for invalid length
+    }
+  }
+
+  searchEmpresa(): void {
+    if (this.empresaRuc && String(this.empresaRuc).length === 11) {
+      this.isEmpresaLoading = true;
+      this.rucService.consultarRuc(String(this.empresaRuc)).subscribe({
+        next: (nombre) => {
+          this.isEmpresaLoading = false;
+          if (nombre) {
+            this.empresaNombre = nombre;
+          } else {
+             this.empresaNombre = '';
+             // Optional: show local error or just clear name
+          }
+        },
+        error: (err) => {
+          this.isEmpresaLoading = false;
+          console.error('Error fetching Company RUC:', err);
+        }
+      });
+    }
   }
 
   onSubmit(): void {
@@ -318,8 +399,13 @@ export class EditUserDialogComponent implements OnInit {
       return;
     }
 
-    if (this.ruc && String(this.ruc).length !== 11) {
-      this.errorMessage = 'El RUC debe tener 11 caracteres';
+    if (this.dni && this.dni.length !== 8) {
+       this.errorMessage = 'El DNI debe tener 8 dígitos';
+       return;
+    }
+
+    if (this.empresaRuc && String(this.empresaRuc).length !== 11) {
+      this.errorMessage = 'El RUC de la empresa debe tener 11 caracteres';
       return;
     }
 
@@ -339,7 +425,9 @@ export class EditUserDialogComponent implements OnInit {
     const updateData: UsuarioUpdateRequest = {
       nombre: this.nombre,
       email: this.email,
-      ...(this.ruc && { empresaRuc: String(this.ruc) }),
+      dni: this.dni,
+      ruc: this.ruc,
+      ...(this.empresaRuc && { empresaRuc: String(this.empresaRuc) }),
       rol: this.rol,
       ...(this.password && { password: this.password })
     };

@@ -222,6 +222,7 @@ export class RegisterPage {
   // Form fields
   nombre = '';
   email = '';
+  dni = ''; 
   ruc = '';
   password = '';
   confirmPassword = '';
@@ -262,6 +263,7 @@ export class RegisterPage {
     const registerData = {
       nombre: this.nombre,
       email: this.email,
+      dni: this.dni,
       ruc: this.ruc,
       password: this.password,
       activo: true,
