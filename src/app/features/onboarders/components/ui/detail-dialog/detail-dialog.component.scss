@@ -1,13 +1,14 @@
 // Detail Dialog Styles - Matching Figma Design
 
 .dialog-container {
-  background-color: var(--color-neutral-200);
+  background-color: var(--color-neutral-100);
   border-radius: 28px;
-  max-width: 900px;
+  max-width: 1250px;
   max-height: 90vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 // ============================================
@@ -51,10 +52,11 @@
 .dialog-content {
   display: grid;
   grid-template-columns: 400px 1fr;
-  gap: 24px;
-  padding: 24px;
+  gap: 32px;
+  padding: 32px;
   overflow-y: auto;
   flex: 1;
+  background-color: var(--color-neutral-200);
 }
 
 // Left Column
@@ -68,32 +70,29 @@
 .status-banner {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
-  border-radius: 12px;
+  gap: 16px;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 
   mat-icon {
-    font-size: 32px;
-    width: 32px;
-    height: 32px;
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
   }
 
   &.status-pendiente {
-    background: linear-gradient(
-      135deg,
-      var(--color-primary-600),
-      var(--color-primary-500)
-    );
+    background: var(--color-primary-600);
     color: white;
   }
 
   &.status-aprobado {
-    background: linear-gradient(135deg, var(--color-success-600), #43a047);
+    background: var(--color-success-600);
     color: white;
   }
 
   &.status-rechazado {
-    background: linear-gradient(135deg, var(--color-error-600), #e53935);
+    background: var(--color-error-600);
     color: white;
   }
 }
@@ -116,10 +115,11 @@
 
 // Info Cards
 .info-card {
-  background: var(--color-neutral-100);
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid var(--color-neutral-300);
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  border: none;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .card-header {
@@ -145,8 +145,8 @@
 
 .info-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 16px;
 }
 
 .info-item {
@@ -184,16 +184,48 @@
 .validation-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+}
+
+// Validation Note Box
+.validation-note-box {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: var(--color-primary-50);
+  border-left: 4px solid var(--color-primary-500);
+  border-radius: 4px 12px 12px 4px;
+  margin-top: 20px;
+
+  .note-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--color-primary-600);
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--color-neutral-700);
+    font-weight: 500;
+  }
 }
 
 .validation-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: var(--color-neutral-200);
-  border-radius: 8px;
+  gap: 16px;
+  padding: 14px 16px;
+  background: var(--color-neutral-100);
+  border-radius: 12px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: var(--color-neutral-200);
+  }
 }
 
 .validation-icon {
@@ -301,18 +333,38 @@
 }
 
 .evidence-image {
-  height: 140px;
+  height: 210px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  background-color: var(--color-neutral-900);
+
+  // Background blurred effect for orientation handling
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    filter: blur(15px) brightness(0.6);
+    opacity: 0.8;
+    z-index: 1;
+  }
 
   img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    position: relative;
+    z-index: 2;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; // Ensures DNI shows full width and Selfie shows full height
+    transition: transform 0.3s ease;
   }
 
   mat-icon {
@@ -321,6 +373,19 @@
     height: 48px;
     color: white;
     opacity: 0.6;
+  }
+
+  // Selective scaling for DNI cards
+  .dni-fill & {
+    &::before {
+      display: none; // No need for blur if image covers
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
 
   &.doc-front {
@@ -376,9 +441,10 @@
 
 // Map
 .map-container {
-  height: 200px;
-  border-radius: 8px;
+  height: 280px;
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .map-image {

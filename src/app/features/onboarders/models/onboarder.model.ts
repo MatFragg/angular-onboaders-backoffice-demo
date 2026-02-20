@@ -145,8 +145,8 @@ export function isLivenessPositive(livenessDetection: number | null): boolean {
 
 // Helper to format liveness for display
 export function formatLiveness(livenessDetection: number | null): string {
-  if (livenessDetection === null) return 'N/A';
-  return isLivenessPositive(livenessDetection) ? 'Positivo' : 'Negativo';
+  if (livenessDetection === null) return 'Dato no disponible';
+  return isLivenessPositive(livenessDetection) ? 'Válido' : 'No Válido / Error';
 }
 
 // Helper to check if biometric comparison is positive (>= 90%)
@@ -158,8 +158,8 @@ export function isComparacionPositive(comparacionBiometrica: number | null): boo
 
 // Helper to format biometric comparison for display
 export function formatComparacion(comparacionBiometrica: number | null): string {
-  if (comparacionBiometrica === null) return 'N/A';
-  return isComparacionPositive(comparacionBiometrica) ? 'Coincide' : 'No coincide';
+  if (comparacionBiometrica === null) return 'Dato no disponible';
+  return isComparacionPositive(comparacionBiometrica) ? 'Válido' : 'No Válido / Error';
 }
 
 // Helper to format estado for display

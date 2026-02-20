@@ -35,3 +35,20 @@ export interface CurrentUser {
   nombre?: string;
   roles?: string[];
 }
+
+// Forgot password request
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+// Reset password request
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
+// Generic API response
+export interface ApiResponse {
+  message: string;
+  success: boolean;
+}

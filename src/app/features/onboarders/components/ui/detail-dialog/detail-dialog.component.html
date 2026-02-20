@@ -27,9 +27,9 @@
 
       <!-- Applicant Information -->
       <div class="info-card" >
-        <div class="card-header" >
-          <mat-icon style="margin-top: 0.6875em;">badge</mat-icon>
-          <h3 style="margin-top: 0.6875em;">Información del Solicitante</h3>
+        <div class="card-header">
+          <mat-icon>badge</mat-icon>
+          <h3>Información del Solicitante</h3>
         </div>
         <div class="info-grid" >
           <div class="info-item">
@@ -57,11 +57,13 @@
         </div>
       </div>
 
+
+
       <!-- Auto-Validation -->
       <div class="info-card">
         <div class="card-header">
           <mat-icon>verified_user</mat-icon>
-          <h3>Auto-Validación</h3>
+          <h3>Criterios de Validación</h3>
         </div>
         <div class="validation-list">
           <!-- RENIEC Validation -->
@@ -70,7 +72,7 @@
               <mat-icon>{{ cabecera.reniecHit ? 'check' : 'close' }}</mat-icon>
             </div>
             <span class="validation-label">Consulta RENIEC</span>
-            <span class="validation-score" [class]="cabecera.reniecHit ? 'score-success' : 'score-error'">{{ cabecera.reniecHit ? 'ENCONTRADO' : 'NO ENCONTRADO' }}</span>
+            <span class="validation-score" [class]="cabecera.reniecHit ? 'score-success' : 'score-error'">{{ cabecera.reniecHit ? 'Validación Exitosa' : 'No Procesado' }}</span>
           </div>
           
            @if (cabecera.reniecHit) {
@@ -78,8 +80,8 @@
               <div class="validation-icon" [class]="getScoreClass(cabecera.reniecSimilarity)">
                 <mat-icon>{{ (cabecera.reniecSimilarity ?? 0) >= 85 ? 'check' : 'warning' }}</mat-icon>
               </div>
-              <span class="validation-label">Similitud RENIEC</span>
-              <span class="validation-score" [class]="getScoreClass(cabecera.reniecSimilarity)">{{ cabecera.reniecSimilarity ?? 'N/A' }}{{ cabecera.reniecSimilarity !== null ? '%' : '' }}</span>
+              <span class="validation-label">Similitud de Identidad</span>
+              <span class="validation-score" [class]="getScoreClass(cabecera.reniecSimilarity)">{{ cabecera.reniecSimilarity !== null ? cabecera.reniecSimilarity + '%' : 'Dato no disponible' }}</span>
             </div>
            }
 
@@ -94,15 +96,17 @@
             <div class="validation-icon" [class]="getScoreClass(cabecera.comparacionBiometrica)">
               <mat-icon>{{ (cabecera.comparacionBiometrica ?? 0) >= 85 ? 'check' : 'warning' }}</mat-icon>
             </div>
-            <span class="validation-label">Comparación Biométrica</span>
-            <span class="validation-score" [class]="getScoreClass(cabecera.comparacionBiometrica)">{{ cabecera.comparacionBiometrica ?? 'N/A' }}{{ cabecera.comparacionBiometrica !== null ? '%' : '' }}</span>
+            <span class="validation-label">Validación Biométrica</span>
+            <span class="validation-score" [class]="getScoreClass(cabecera.comparacionBiometrica)">{{ cabecera.comparacionBiometrica !== null ? cabecera.comparacionBiometrica + '%' : 'Dato no disponible' }}</span>
+          </div>
+
+          <div class="validation-note-box">
+            <mat-icon class="note-icon">lightbulb</mat-icon>
+            <p>
+              Una puntuación biométrica superior al 85% se considera coincidencia, pero se sugiere revisión manual para valores inferiores al 92%.
+            </p>
           </div>
         </div>
-
-        <p class="validation-note">
-          <mat-icon>info</mat-icon>
-          Una puntuación biométrica superior al 85% se considera coincidencia, pero se sugiere revisión manual para valores inferiores al 92%.
-        </p>
       </div>
     </div>
 
@@ -118,8 +122,8 @@
       </div>
 
       <div class="evidence-grid">
-        <div class="evidence-card" (click)="openLightbox(0)">
-          <div class="evidence-image doc-front">
+        <div class="evidence-card dni-fill" (click)="openLightbox(0)">
+          <div class="evidence-image" [style.--bg-image]="'url(' + getImageSrc(detalle.fotoAnverso) + ')'">
             @if (detalle.fotoAnverso) {
               <img [src]="getImageSrc(detalle.fotoAnverso)" alt="Anverso DNI">
             } @else {
@@ -128,8 +132,8 @@
           </div>
           <span class="evidence-label">Anverso DNI</span>
         </div>
-        <div class="evidence-card" (click)="openLightbox(1)">
-          <div class="evidence-image doc-back">
+        <div class="evidence-card dni-fill" (click)="openLightbox(1)">
+          <div class="evidence-image" [style.--bg-image]="'url(' + getImageSrc(detalle.fotoReverso) + ')'">
             @if (detalle.fotoReverso) {
               <img [src]="getImageSrc(detalle.fotoReverso)" alt="Reverso DNI">
             } @else {
@@ -139,7 +143,7 @@
           <span class="evidence-label">Reverso DNI</span>
         </div>
         <div class="evidence-card" (click)="openLightbox(2)">
-          <div class="evidence-image photo">
+          <div class="evidence-image" [style.--bg-image]="'url(' + getImageSrc(detalle.fotoFacialDni) + ')'">
             @if (detalle.fotoFacialDni) {
               <img [src]="getImageSrc(detalle.fotoFacialDni)" alt="Foto DNI">
             } @else {
@@ -150,7 +154,7 @@
           <span class="evidence-label">Foto del DNI</span>
         </div>
         <div class="evidence-card" (click)="openLightbox(3)">
-          <div class="evidence-image selfie">
+          <div class="evidence-image" [style.--bg-image]="'url(' + getImageSrc(detalle.fotoSelfie) + ')'">
             @if (detalle.fotoSelfie) {
               <img [src]="getImageSrc(detalle.fotoSelfie)" alt="Selfie">
             } @else {
@@ -166,7 +170,7 @@
       <div class="info-card">
         <div class="card-header">
           <mat-icon>location_on</mat-icon>
-          <h3>Ubicación</h3>
+          <h3>Ubicación de Captura</h3>
         </div>
         @if (hasCoordinates) {
           <div class="map-container" #mapContainer></div>
@@ -176,16 +180,17 @@
         } @else {
           <div class="no-location">
             <mat-icon>location_off</mat-icon>
-            <span>Sin ubicación disponible</span>
+            <span>Geolocalización no detectada</span>
           </div>
         }
       </div>
+
 
       <!-- Warning Banner -->
       @if (cabecera.comparacionBiometrica !== null && cabecera.comparacionBiometrica < 92) {
         <div class="warning-banner">
           <mat-icon>visibility</mat-icon>
-          <span>Por favor verifique manualmente la forma de las orejas y la distancia entre los ojos.</span>
+          <span>Alerta: Se recomienda inspección manual minuciosa de rasgos faciales.</span>
         </div>
       }
     </div>
@@ -197,10 +202,10 @@
   <div class="dialog-footer">
     <div class="action-buttons">
       @if (isPending) {
-        <button mat-stroked-button color="warn" (click)="reject()" [disabled]="isProcessing">Rechazar</button>
+        <button mat-stroked-button color="warn" (click)="reject()" [disabled]="isProcessing"> <mat-icon>close</mat-icon> Rechazar</button>
         <button mat-flat-button color="primary" (click)="approve()" [disabled]="isProcessing">
           <mat-icon>check</mat-icon>
-          Aprobar Verificación
+          Aprobar
         </button>
       } @else {
         <button mat-stroked-button (click)="close()">Cerrar</button>

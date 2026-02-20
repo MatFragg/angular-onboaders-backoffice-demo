@@ -124,7 +124,7 @@ export class OnboardersPage implements OnInit {
         
         const dialogRef = this.dialog.open(DetailDialogComponent, {
           data: onboarderCompleto,
-          width: '900px',
+          width: '1250px',
           maxWidth: '95vw',
           panelClass: 'detail-dialog-panel',
         });

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { environment } from '@env/environment';
-import { LoginRequest, RegisterRequest, AuthResponse, CurrentUser } from '../models/auth.model';
+import { LoginRequest, RegisterRequest, AuthResponse, CurrentUser, ForgotPasswordRequest, ResetPasswordRequest, ApiResponse } from '../models/auth.model';
 
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
@@ -55,6 +55,33 @@ export class AuthService {
       }),
       catchError(error => {
         console.error('Register error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Request password reset email
+   * POST /api/auth/forgot-password
+   */
+  forgotPassword(email: string): Observable<ApiResponse> {
+    const request: ForgotPasswordRequest = { email };
+    return this.http.post<ApiResponse>(`${this.apiUrl}/forgot-password`, request).pipe(
+      catchError(error => {
+        console.error('Forgot password error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Reset password using token
+   * POST /api/auth/reset-password
+   */
+  resetPassword(data: ResetPasswordRequest): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.apiUrl}/reset-password`, data).pipe(
+      catchError(error => {
+        console.error('Reset password error:', error);
         return throwError(() => error);
       })
     );
