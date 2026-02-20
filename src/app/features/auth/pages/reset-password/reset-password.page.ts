@@ -24,6 +24,11 @@ import { AuthService } from '../../../../core/services/auth.service';
   ],
   template: `
     <div class="auth-wrapper">
+      <div class="geometric-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+      </div>
+
       <div class="auth-card">
         <div class="auth-header">
           <div class="brand">
@@ -31,14 +36,28 @@ import { AuthService } from '../../../../core/services/auth.service';
             <span>ACJ Onboarders</span>
           </div>
           <h2>Restablecer Contraseña</h2>
-          <p>Ingresa tu nueva contraseña para recuperar el acceso a tu cuenta.</p>
+          @if (tokenValid && !isSuccess && !isValidating) {
+            <p>Ingresa tu nueva contraseña para recuperar el acceso a tu cuenta.</p>
+          }
         </div>
 
-        @if (isSuccess) {
+        @if (isValidating) {
+          <div class="loading-state">
+            <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+            <p>Validando enlace...</p>
+          </div>
+        } @else if (isSuccess) {
           <div class="success-message">
             <mat-icon>check_circle</mat-icon>
             <p>¡Contraseña actualizada con éxito!</p>
             <button mat-flat-button color="primary" routerLink="/login" class="full-width">Iniciar Sesión</button>
+          </div>
+        } @else if (errorMessage && !tokenValid) {
+          <div class="error-panel">
+            <mat-icon>error_outline</mat-icon>
+            <h3>Enlace no válido</h3>
+            <p>{{ errorMessage }}</p>
+            <button mat-flat-button color="primary" routerLink="/forgot-password" class="full-width">Solicitar nuevo enlace</button>
           </div>
         } @else {
           <form (ngSubmit)="onSubmit()" #resetForm="ngForm">
@@ -94,17 +113,55 @@ import { AuthService } from '../../../../core/services/auth.service';
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background-color: var(--color-neutral-200);
+      background-color: var(--color-primary-900);
+      position: relative;
+      overflow: hidden;
       padding: 20px;
     }
 
+    /* Geometric Shapes */
+    .geometric-shapes {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .shape {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 40px;
+    }
+
+    .shape-1 {
+      width: 400px;
+      height: 400px;
+      top: -100px;
+      right: -100px;
+      transform: rotate(45deg);
+    }
+
+    .shape-2 {
+      width: 300px;
+      height: 300px;
+      bottom: -50px;
+      left: -50px;
+      transform: rotate(-15deg);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
     .auth-card {
+      position: relative;
+      z-index: 10;
       width: 100%;
       max-width: 450px;
       background: white;
       padding: 40px;
       border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .auth-header {
@@ -118,7 +175,7 @@ import { AuthService } from '../../../../core/services/auth.service';
         color: var(--color-primary-900);
         font-weight: 700;
         margin-bottom: 16px;
-        mat-icon { font-size: 24px; width: 24px; height: 24px; }
+        mat-icon { font-size: 24px; width: 24px; height: 24px; color: var(--color-primary-600); }
       }
 
       h2 { font-size: 24px; font-weight: 700; color: var(--color-neutral-900); margin-bottom: 8px; }
@@ -137,11 +194,11 @@ import { AuthService } from '../../../../core/services/auth.service';
     .success-message {
       text-align: center;
       padding: 24px;
-      background: var(--color-success-100);
+      background: var(--color-success-50);
       border-radius: 12px;
-      color: var(--color-success-600);
+      color: var(--color-success-700);
       
-      mat-icon { font-size: 48px; width: 48px; height: 48px; margin-bottom: 16px; }
+      mat-icon { font-size: 48px; width: 48px; height: 48px; margin-bottom: 16px; color: var(--color-success-500); }
       p { margin-bottom: 24px; font-weight: 500; }
     }
 
@@ -149,13 +206,30 @@ import { AuthService } from '../../../../core/services/auth.service';
       display: flex;
       align-items: center;
       gap: 8px;
-      color: var(--color-error-600);
-      background: var(--color-error-100);
+      color: var(--color-error-700);
+      background: var(--color-error-50);
       padding: 12px;
       border-radius: 8px;
       margin: 16px 0;
       font-size: 14px;
-      mat-icon { font-size: 20px; width: 20px; height: 20px; }
+      mat-icon { font-size: 20px; width: 20px; height: 20px; color: var(--color-error-500); }
+    }
+
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 30px;
+      p { color: var(--color-neutral-600); font-weight: 500; margin: 0; }
+    }
+
+    .error-panel {
+      text-align: center;
+      padding: 20px 0;
+      mat-icon { font-size: 64px; width: 64px; height: 64px; color: var(--color-error-500); margin-bottom: 16px; opacity: 0.8; }
+      h3 { font-size: 20px; font-weight: 700; color: var(--color-neutral-900); margin-bottom: 12px; }
+      p { color: var(--color-neutral-600); margin-bottom: 24px; line-height: 1.5; }
     }
 
     mat-progress-spinner { margin: 0 auto; }
@@ -172,14 +246,31 @@ export class ResetPasswordPage implements OnInit {
   hidePassword = true;
   hideConfirmPassword = true;
   isLoading = false;
+  isValidating = true;
+  tokenValid = false;
   isSuccess = false;
   errorMessage = '';
 
   ngOnInit(): void {
     this.token = this.route.snapshot.queryParams['token'] || '';
     if (!this.token) {
-      this.errorMessage = 'El token de recuperación no es válido o ha expirado.';
+      this.isValidating = false;
+      this.errorMessage = 'El token de recuperación no es válido o está ausente.';
+      return;
     }
+
+    // Validate token immediately on load
+    this.authService.validateResetToken(this.token).subscribe({
+      next: () => {
+        this.isValidating = false;
+        this.tokenValid = true;
+      },
+      error: (err: any) => {
+        this.isValidating = false;
+        this.tokenValid = false;
+        this.errorMessage = err.error?.message || 'El enlace de recuperación es inválido o ha expirado.';
+      }
+    });
   }
 
   onSubmit(): void {

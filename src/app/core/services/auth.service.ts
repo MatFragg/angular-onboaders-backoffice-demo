@@ -88,6 +88,21 @@ export class AuthService {
   }
 
   /**
+   * Validate password reset token (UUID)
+   * GET /api/auth/validate-token?token=...
+   */
+  validateResetToken(token: string): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.apiUrl}/validate-token`, {
+      params: { token }
+    }).pipe(
+      catchError(error => {
+        console.error('Token validation error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
    * Logout - clear token and redirect
    */
   logout(): void {
