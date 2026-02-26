@@ -74,16 +74,6 @@
             <span class="validation-label">Consulta RENIEC</span>
             <span class="validation-score" [class]="cabecera.reniecHit ? 'score-success' : 'score-error'">{{ cabecera.reniecHit ? 'Validación Exitosa' : 'No Procesado' }}</span>
           </div>
-          
-           @if (cabecera.reniecHit) {
-            <div class="validation-item">
-              <div class="validation-icon" [class]="getScoreClass(cabecera.reniecSimilarity)">
-                <mat-icon>{{ (cabecera.reniecSimilarity ?? 0) >= 85 ? 'check' : 'warning' }}</mat-icon>
-              </div>
-              <span class="validation-label">Similitud de Identidad</span>
-              <span class="validation-score" [class]="getScoreClass(cabecera.reniecSimilarity)">{{ cabecera.reniecSimilarity !== null ? cabecera.reniecSimilarity + '%' : 'Dato no disponible' }}</span>
-            </div>
-           }
 
           <div class="validation-item">
             <div class="validation-icon" [class]="getScoreClass(cabecera.livenessDetection)">

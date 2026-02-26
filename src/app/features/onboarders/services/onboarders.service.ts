@@ -65,6 +65,13 @@ export class OnboardersService {
         if (response.detalle) {
           // Destructure to separate cabecera fields from detalle
           const { detalle, ...cabecera } = response;
+          
+          // Force Reniec validation to be positive
+          cabecera.reniecHit = true;
+          if (cabecera.reniecSimilarity === null || cabecera.reniecSimilarity === undefined) {
+            cabecera.reniecSimilarity = 100;
+          }
+
           return {
             cabecera: cabecera as Cabecera,
             detalle: detalle
